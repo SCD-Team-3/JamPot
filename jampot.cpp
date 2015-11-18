@@ -11,9 +11,6 @@
  * INCLUDES                                                                   *
  ******************************************************************************/
  
-// Standard Libraries
-#include <string>
- 
 // GUI Libraries
 #include <nana/gui/wvl.hpp>
 #include <nana/gui/widgets/label.hpp>

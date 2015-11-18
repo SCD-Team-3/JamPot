@@ -27,13 +27,9 @@
 /******************************************************************************
  * Class:       CompoundWave                                                  *
  * Base Class:  Wave                                                          *
- * Subclasses:  [None]                                                        *
  * Description: Represents the sum of an arbitrary number of SineWaves.       *
  ******************************************************************************/
 class CompoundWave : public Wave {
-	friend class Wave;
-	friend class SineWave;
-	friend class WaveProduct;
 	
 	public:
 		CompoundWave();
@@ -41,23 +37,16 @@ class CompoundWave : public Wave {
 		// Overloaded operators make it easier to represent common mathematical
 		// operations how they are normally symbolically represented in
 		// mathematics.
-		CompoundWave operator= (const CompoundWave& other);
-		CompoundWave operator= (const WaveTerm&     other);
-		CompoundWave operator+=(const CompoundWave& other);
-		CompoundWave operator+=(const WaveTerm&     other);
-		CompoundWave operator-=(const CompoundWave& other);
-		CompoundWave operator-=(const WaveTerm&     other);
-		CompoundWave operator*=(const CompoundWave& other);
-		CompoundWave operator*=(const WaveTerm&     other);
-		CompoundWave operator/=(const WaveTerm&     other);
-		CompoundWave operator+ (const CompoundWave& other);
-		CompoundWave operator+ (const WaveTerm&     other);
-		CompoundWave operator- (const CompoundWave& other);
-		CompoundWave operator- (const WaveTerm&     other);
-		CompoundWave operator- (                         );
-		CompoundWave operator* (const CompoundWave& other);
-		CompoundWave operator* (const WaveTerm&     other);
-		CompoundWave operator/ (const WaveTerm&     other);
+		CompoundWave operator= (const Wave&     other);
+		CompoundWave operator+=(const Wave&     other);
+		CompoundWave operator-=(const Wave&     other);
+		CompoundWave operator*=(const Wave&     other);
+		CompoundWave operator/=(const WaveTerm& other);
+		CompoundWave operator+ (const Wave&     other);
+		CompoundWave operator- (const Wave&     other);
+		CompoundWave operator- (                     );
+		CompoundWave operator* (const Wave&     other);
+		CompoundWave operator/ (const WaveTerm& other);
 	
 	private:
 		std::vector<WaveTerm*> components;

@@ -24,10 +24,14 @@
  * CLASSES                                                                    *
  ******************************************************************************/
 
+/******************************************************************************
+ * Class:       WaveProduct                                                   *
+ * Base Class:  WaveTerm                                                      *
+ * Description: Represents a pure sine wave, using the cosine function as the *
+ *              core function. The defining parameters are amplitude,         *
+ *              period, and phase.                                            *
+ ******************************************************************************/
 class WaveProduct : public WaveTerm {
-	friend class Wave;
-	friend class SineWave;
-	friend class CompoundWave;
 
 	public:
 		WaveProduct();
@@ -35,22 +39,16 @@ class WaveProduct : public WaveTerm {
 		// Overloaded operators make it easier to represent common mathematical
 		// operations how they are normally symbolically represented in
 		// mathematics
-		WaveProduct  operator= (const WaveProduct&  other);
-		WaveProduct  operator= (const SineWave&     other);
-		WaveProduct  operator*=(const WaveProduct&  other);
-		WaveProduct  operator*=(const SineWave&     other);
-		WaveProduct  operator/=(const WaveProduct&  other);
-		WaveProduct  operator/=(const SineWave&     other);
-		CompoundWave operator+ (const WaveProduct&  other);
-		CompoundWave operator+ (const SineWave&     other);
-		CompoundWave operator+ (const CompoundWave& other);
-		CompoundWave operator- (const WaveProduct&  other);
-		CompoundWave operator- (const SineWave&     other);
-		CompoundWave operator- (const CompoundWave& other);
-		WaveProduct  operator* (const WaveProduct&  other);
-		WaveProduct  operator* (const SineWave&     other);
-		WaveProduct  operator/ (const WaveProduct&  other);
-		WaveProduct  operator/ (const SineWave&     other);
+		WaveProduct  operator= (const WaveTerm&     other);
+		WaveProduct  operator*=(const WaveTerm&     other);
+		WaveProduct  operator/=(const WaveTerm&     other);
+		CompoundWave operator+ (const Wave&         other);
+		CompoundWave operator- (const Wave&         other);
+		WaveProduct  operator- (                         );
+		CompoundWave operator* (const CompoundWave& other);
+		WaveProduct  operator* (const WaveTerm&     other);
+		WaveProduct  operator/ (const WaveTerm&     other);
+		bool         operator==(const Wave&         other);
 
 	private:
 		std::vector<SineWave*> components;

@@ -22,14 +22,12 @@
 
 /******************************************************************************
  * Class:       SineWave                                                      *
- * Base Class:  Wave                                                          *
- * Subclasses:  [None]                                                        *
+ * Base Class:  WaveTerm                                                      *
  * Description: Represents a pure sine wave, using the cosine function as the *
  *              core function. The defining parameters are amplitude,         *
  *              period, and phase.                                            *
  ******************************************************************************/
-class SineWave : public Wave {
-	friend class CompoundWave;
+class SineWave : public WaveTerm {
 	
 	public:
 		/******************************************************************************
@@ -90,47 +88,25 @@ class SineWave : public Wave {
 		
 		/******************************************************************************
 		 * Function:     SineWave::operator+                                          *
-		 * Arguments:    other - The SineWave function on the right side of the       *
-		 *                       addition operator to be added to the left SineWave   *
-		 *                       function.                                            *
+		 * Arguments:    other - The function on the right side of the addition       *
+		 *                       operator to be added to the function on the left     *
+		 *                       side.                                                *
 		 * Returns:      A new CompoundWave object equal to the sum of the two waves  *
 		 *               added together.                                              *
 		 * Side Effects: [None]                                                       *
 		 ******************************************************************************/
-		CompoundWave operator+ (const SineWave&     other);
-		
-		/******************************************************************************
-		 * Function:     SineWave::operator+                                          *
-		 * Arguments:    other - The CompoundWave function on the right side of the   *
-		 *                       addition operator to be added to the left SineWave   *
-		 *                       function.                                            *
-		 * Returns:      A new CompoundWave object equal to the sum of the two waves  *
-		 *               added together.                                              *
-		 * Side Effects: [None]                                                       *
-		 ******************************************************************************/
-		CompoundWave operator+ (const CompoundWave& other);
+		CompoundWave operator+ (const Wave&         other);
 		
 		/******************************************************************************
 		 * Function:     SineWave::operator-                                          *
-		 * Arguments:    other - The SineWave function on the right side of the       *
-		 *                       subtraction operator to be subtracted from the left  *
-		 *                       SineWave function.                                   *
+		 * Arguments:    other - The function on the right side of the subtraction    *
+		 *                       operator to be subtracted from the function on the   *
+		 *                       left side.                                           *
 		 * Returns:      A new CompoundWave object equal to the difference of the two *
 		 *               waves.                                                       *
 		 * Side Effects: [None]                                                       *
 		 ******************************************************************************/
-		CompoundWave operator- (const SineWave&     other);
-		
-		/******************************************************************************
-		 * Function:     SineWave::operator-                                          *
-		 * Arguments:    other - The CompoundWave function on the right side of the   *
-		 *                       subtraction operator to be subtracted from the left  *
-		 *                       SineWave function.                                   *
-		 * Returns:      A new CompoundWave object equal to the difference of the two *
-		 *               waves.                                                       *
-		 * Side Effects: [None]                                                       *
-		 ******************************************************************************/
-		CompoundWave operator- (const CompoundWave& other);
+		CompoundWave operator- (const Wave&         other);
 		
 		/******************************************************************************
 		 * Function:     SineWave::operator-                                          *
@@ -140,8 +116,14 @@ class SineWave : public Wave {
 		 ******************************************************************************/
 		SineWave     operator- (                         );
 
-		WaveProduct  operator* (const SineWave&     other);
-		WaveProduct  operator* (const WaveProduct&  other);
+		/******************************************************************************
+		 * Function:     SineWave::operator*                                          *
+		 * Arguments:    other - The function on the right side of the multiplication *
+		 *                        operator to be multiplied by the left side.         *
+		 * Returns:      The product of the functions on either side of the operator. *
+		 * Side Effects: [None]                                                       *
+		 ******************************************************************************/
+		WaveProduct  operator* (const WaveTerm&     other);
 		CompoundWave operator* (const CompoundWave& other);
 	
 	private:
@@ -149,3 +131,7 @@ class SineWave : public Wave {
 };
 
  #endif // SINEWAVE_HPP
+
+/******************************************************************************
+ * END OF FILE                                                                *
+ ******************************************************************************/
