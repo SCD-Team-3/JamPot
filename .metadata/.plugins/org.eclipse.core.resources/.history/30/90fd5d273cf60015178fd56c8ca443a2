@@ -1,0 +1,7 @@
+package application;
+
+import Application;
+
+public class JamPot extends Application {
+
+}
