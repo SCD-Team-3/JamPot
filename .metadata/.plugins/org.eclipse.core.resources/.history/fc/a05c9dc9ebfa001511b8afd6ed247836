@@ -1,0 +1,26 @@
+package application;
+
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.geometry.Insets;
+import javafx.scene.Node;
+import javafx.scene.control.Button;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+
+public class NavButton extends Button {
+
+	public NavButton(String text, double x, double width, EventHandler<ActionEvent> value) {
+		this.setText(text);
+		this.setOnAction(value);
+		this.setPrefSize(width, 50);
+		this.setFont(new Font(24));
+		this.setLayoutX(x);
+		this.setLayoutY(540);
+		this.setBackground(new Background(new BackgroundFill(Color.rgb(26, 26, 26), new Insets(1), CornerRadii.EMPTY)));
+	}
+
+}

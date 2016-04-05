@@ -1,13 +1,16 @@
 package application;
 
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
+import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import javafx.scene.shape.Rectangle;
 
 public class JamPot extends Application {
 
@@ -16,19 +19,49 @@ public class JamPot extends Application {
 	}
 
 	public void start(Stage primaryStage) throws Exception {
-		Button btn = new Button("Click me");
-		btn.setOnAction(e->btn_click());
-		StackPane frame = new StackPane();
-		frame.getChildren().add(btn);
-		Scene scene = new Scene(frame, 200, 50);
+		
+		Pane frame = new Pane();
+		frame.setBackground(new Background(new BackgroundFill(Color.rgb(26,26,26), null, null)));
+		
+		// Create & configure "Select Pattern" button
+		NavButton patternSelect = new NavButton("Select Pattern", 10, 500, e->selectPattern());
+		frame.getChildren().add(patternSelect);
+		
+		// Create & configure "Edit" button
+		NavButton edit = new NavButton("Edit", 520, 130, e->edit());
+		frame.getChildren().add(edit);
+		
+		// Create & configure "Save" button
+		NavButton save = new NavButton("Save", 660, 130, e->save());
+		frame.getChildren().add(save);
+		
+		// Create and configure Amplitude grouping
+		QuickAccessGroup amplitudeGrp = new QuickAccessGroup(535, 10);
+		frame.getChildren().add(amplitudeGrp);
+		
+		// Create and configure Frequency grouping
+		QuickAccessGroup frequencyGrp = new QuickAccessGroup(535, 275);
+		frame.getChildren().add(frequencyGrp);
+		
+		Scene scene = new Scene(frame, 800, 600);
 		primaryStage.setScene(scene);
 		primaryStage.setTitle("Hello World!");
 		primaryStage.show();
 	}
 	
-	public void btn_click()
+	public void selectPattern()
 	{
-		System.out.println("You clicked the button");
+		System.out.println("Select Pattern");
+	}
+	
+	public void edit()
+	{
+		System.out.println("Edit");
+	}
+	
+	public void save()
+	{
+		System.out.println("Save");
 	}
 
 }
