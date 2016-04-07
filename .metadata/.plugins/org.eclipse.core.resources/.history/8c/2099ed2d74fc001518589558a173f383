@@ -1,0 +1,28 @@
+package application;
+
+public class Attribute {
+	private String name;
+	private int value;
+
+	public Attribute(String name) {
+		this.name = name;
+	}
+	
+	public int change(String type) {
+		if (type.equals("+")) {
+			value++;
+		} else if (type.equals("-")) {
+			value--;
+		}
+		
+		return value;
+	}
+	
+	public String getName() {
+		return name;
+	}
+	
+	public int getValue() {
+		return value;
+	}
+}

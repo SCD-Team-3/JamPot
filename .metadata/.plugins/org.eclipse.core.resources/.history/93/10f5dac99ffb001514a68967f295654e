@@ -1,0 +1,7 @@
+package application;
+
+import javafx.control.scene.Button;
+
+public class IncrButton extends Button {
+
+}

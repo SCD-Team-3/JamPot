@@ -1,0 +1,43 @@
+package application;
+
+import javafx.scene.control.TextField;
+
+public class Attribute {
+	private String name;
+	private int value;
+	private String unit;
+	private TextField display;
+
+	public Attribute(String name, String unit) {
+		this.name = name;
+		this.unit = unit;
+	}
+	
+	public void setDisplayTextField(TextField display) {
+		this.display = display;
+	}
+	
+	public int change(String type) {
+		if (type.equals("+")) {
+			value++;
+		} else if (type.equals("-")) {
+			value--;
+		}
+		
+		display.setText(Integer.toString(value) + " " + this.unit);
+		
+		return value;
+	}
+	
+	public String getName() {
+		return name;
+	}
+	
+	public int getValue() {
+		return value;
+	}
+	
+	public String getUnit() {
+		return unit;
+	}
+}

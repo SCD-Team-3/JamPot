@@ -1,16 +1,12 @@
 package application;
 
 import javafx.application.Application;
-import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
 import javafx.stage.Stage;
-import javafx.scene.shape.Rectangle;
 
 public class JamPot extends Application {
 
@@ -20,6 +16,13 @@ public class JamPot extends Application {
 
 	public void start(Stage primaryStage) throws Exception {
 		
+		Scene scene = new Scene(getHomePane(), 800, 600);
+		primaryStage.setScene(scene);
+		primaryStage.setTitle("Hello World!");
+		primaryStage.show();
+	}
+	
+	public Pane getHomePane() {
 		Pane frame = new Pane();
 		frame.setBackground(new Background(new BackgroundFill(Color.rgb(26,26,26), null, null)));
 		
@@ -36,17 +39,16 @@ public class JamPot extends Application {
 		frame.getChildren().add(save);
 		
 		// Create and configure Amplitude grouping
-		QuickAccessGroup amplitudeGrp = new QuickAccessGroup(535, 10);
+		Attribute amplitude = new Attribute("Amplitude", "%", 50, 0, 100);
+		QuickAccessGroup amplitudeGrp = new QuickAccessGroup(amplitude, 535, 10);
 		frame.getChildren().add(amplitudeGrp);
 		
 		// Create and configure Frequency grouping
-		QuickAccessGroup frequencyGrp = new QuickAccessGroup(535, 275);
+		Attribute frequency = new Attribute("Frequency", "Hz", 100, 1, 200);
+		QuickAccessGroup frequencyGrp = new QuickAccessGroup(frequency, 535, 275);
 		frame.getChildren().add(frequencyGrp);
 		
-		Scene scene = new Scene(frame, 800, 600);
-		primaryStage.setScene(scene);
-		primaryStage.setTitle("Hello World!");
-		primaryStage.show();
+		return frame;
 	}
 	
 	public void selectPattern()
@@ -63,5 +65,4 @@ public class JamPot extends Application {
 	{
 		System.out.println("Save");
 	}
-
 }

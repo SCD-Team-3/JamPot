@@ -1,0 +1,56 @@
+package application;
+
+import javafx.geometry.Pos;
+import javafx.scene.Group;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.TextAlignment;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
+
+public class QuickAccessGroup extends Group {
+	public QuickAccessGroup(String name, double x, double y) {
+		
+		// Create and configure outline
+		Rectangle outline = new Rectangle(x, y, 255, 255);
+		outline.setFill(Color.rgb(127, 127, 127));
+		outline.setArcHeight(100);
+		outline.setArcWidth(100);
+		this.getChildren().add(outline);
+		
+		// Create and configure fill
+		Rectangle fill = new Rectangle(x+1, y+1, 253, 253);
+		fill.setFill(Color.rgb(26, 26, 26));
+		fill.setArcHeight(100);
+		fill.setArcWidth(100);
+		this.getChildren().add(fill);
+		
+		// Create and configure label
+		Label title = new Label(name);
+		title.setFont(Font.font("Calibri", FontWeight.NORMAL, 44));
+		title.setAlignment(Pos.TOP_CENTER);
+		title.setTextAlignment(TextAlignment.CENTER);
+		title.setPrefWidth(255);
+		title.setLayoutX(x);
+		title.setLayoutY(y+10);
+		title.setTextFill(Color.WHITE);
+		this.getChildren().add(title);
+		
+		// Create and configure text box
+		TextField value = new TextField();
+		value.setPrefWidth(200);
+		value.setPrefHeight(63);
+		value.setLayoutX(x+255/2-200/2);
+		value.setLayoutY(y+75);
+		value.setFont(Font.font("Calibri", FontWeight.BOLD, 44));
+		value.setBackground(new Background(new BackgroundFill(Color.BLACK, new CornerRadii(10), null)));
+		value.setStyle("-fx-text-fill: white;");
+		value.setAlignment(Pos.CENTER);
+		this.getChildren().add(value);
+	}
+}

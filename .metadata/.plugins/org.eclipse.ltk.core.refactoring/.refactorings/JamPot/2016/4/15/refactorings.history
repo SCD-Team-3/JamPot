@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename field &apos;NAME_SIZE&apos; in &apos;application.QuickAccessGroup&apos; to &apos;FONT_SIZE&apos;&#x0D;&#x0A;- Original project: &apos;JamPot&apos;&#x0D;&#x0A;- Original element: &apos;application.QuickAccessGroup.NAME_SIZE&apos;&#x0D;&#x0A;- Renamed element: &apos;application.QuickAccessGroup.FONT_SIZE&apos;&#x0D;&#x0A;- Update references to refactored element&#x0D;&#x0A;- Update textual occurrences in comments and strings" delegate="false" deprecate="false" description="Rename field &apos;NAME_SIZE&apos;" flags="589826" getter="false" id="org.eclipse.jdt.ui.rename.field" input="/src&lt;application{QuickAccessGroup.java[QuickAccessGroup^NAME_SIZE" name="FONT_SIZE" references="true" setter="false" stamp="1459903518688" textual="false" version="1.0"/>
+</session>
