@@ -19,36 +19,28 @@ public class MotionPattern {
 		0x25,0x27,0x2a,0x2c,0x2e,0x31,0x33,0x36,0x38,0x3b,0x3e,0x40,0x43,0x46,0x49,0x4c,
 		0x4f,0x51,0x54,0x57,0x5a,0x5d,0x60,0x63,0x67,0x6a,0x6d,0x70,0x73,0x76,0x79,0x7c};
 
-	/* x and y are cartesian coordinates
-	   i and j are unit vectors in the x and y directions, respectively
-			   y, j
-				|
-				|
-				|
-				|
-	  ----------+---------- x, i
-	  			|
-	  			|
-	  			|
-	  			|
-	*/
-
-	// y = 0
-	// x = sin(t)
-	// A = i
-	// B = icos(120) + jsin(120)
-	// C = icos(240) + jsin(240)
+	// A(t) = sin(t)
+	// B(t) = 0.5sin(t-180)
+	// C(t) = 0.5sin(t-180)
 	public static final MotionPattern LINE_A = new MotionPattern(scaleArray(getSineWaveShifted(0), 1),
-																 scaleArray(getSineWaveShifted(180), ), 
-																 scaleArray(getSineWaveShifted(180), ),
+																 scaleArray(getSineWaveShifted(180), 0.5), 
+																 scaleArray(getSineWaveShifted(180), 0.5),
 																 100, 1);
-	public static final MotionPattern LINE_B = new MotionPattern(scaleArray(getSineWaveShifted(180), ),
-																 scaleArray(getSineWaveShifted(0),
-																 scaleArray(getSineWaveShifted(180),
+
+	// A(t) = 0.5sin(t-180)
+	// B(t) = sin(t)
+	// C(t) = 0.5sin(t-180)
+	public static final MotionPattern LINE_B = new MotionPattern(scaleArray(getSineWaveShifted(180), 0.5),
+																 scaleArray(getSineWaveShifted(0), 1),
+																 scaleArray(getSineWaveShifted(180), 0.5),
 																 100, 1);
-	public static final MotionPattern LINE_C = new MotionPattern(scaleArray(getSineWaveShifted(180),
-																 scaleArray(getSineWaveShifted(180),
-																 scaleArray(getSineWaveShifted(0),
+
+	// A(t) = 0.5sin(t-180)
+	// B(t) = 0.5sin(t-180)
+	// C(t) = sin(t)
+	public static final MotionPattern LINE_C = new MotionPattern(scaleArray(getSineWaveShifted(180), 0.5),
+																 scaleArray(getSineWaveShifted(180), 0.5),
+																 scaleArray(getSineWaveShifted(0), 1),
 																 100, 1);
 	public static final MotionPattern CIRCLE = new MotionPattern(scaleArray(getSineWaveShifted(), ),
 																 scaleArray(getSineWaveShifted(), ),
@@ -210,7 +202,7 @@ public class MotionPattern {
 
 	private static byte[] scaleArray(byte[] array, double factor) {
 		for (i = 0; i < array.length)
-			array[i] *= factor;
+			array[i] = ((((double) array[i]) - 128) * factor) + 128;
 
 		return array;
 	}
