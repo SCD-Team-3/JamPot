@@ -1,9 +1,0 @@
-package application;
-
-public class MotionPattern {
-
-	public MotionPattern() {
-		// TODO Auto-generated constructor stub
-	}
-
-}
