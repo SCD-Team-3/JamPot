@@ -1,3 +1,20 @@
+/* Attribute.java
+ *
+ * AUTHOR
+ * Will Weaver
+ * Computer Engineering Major
+ * Mechanical Engineering Senior Capstone Design Team 3
+ * Michigan Technological University
+ *
+ * SPONSOR
+ * Mitch Baldwin
+ * Stryker Instruments
+ *
+ * DESCRIPTION
+ * Represents an attribute of a motion pattern as it is being manipulated by the
+ * user in the GUI.
+ */
+
 package application;
 
 public class Attribute {

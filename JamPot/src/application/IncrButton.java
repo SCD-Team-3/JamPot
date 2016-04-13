@@ -1,3 +1,20 @@
+/* IncrButton.java
+ *
+ * AUTHOR
+ * Will Weaver
+ * Computer Engineering Major
+ * Mechanical Engineering Senior Capstone Design Team 3
+ * Michigan Technological University
+ *
+ * SPONSOR
+ * Mitch Baldwin
+ * Stryker Instruments
+ *
+ * DESCRIPTION
+ * Represents a button used to increment and decrement attributes of motion
+ * patterns on screen.
+ */
+
 package application;
 
 import javafx.scene.control.Button;

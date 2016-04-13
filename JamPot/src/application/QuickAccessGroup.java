@@ -1,3 +1,20 @@
+/* MotionPattern.java
+ *
+ * AUTHOR
+ * Will Weaver
+ * Computer Engineering Major
+ * Mechanical Engineering Senior Capstone Design Team 3
+ * Michigan Technological University
+ *
+ * SPONSOR
+ * Mitch Baldwin
+ * Stryker Instruments
+ *
+ * DESCRIPTION
+ * Represents the group of GUI elements used to display and manipulate
+ * a specific attribute of a motion pattern on screen.
+ */
+
 package application;
 
 import javafx.geometry.Pos;

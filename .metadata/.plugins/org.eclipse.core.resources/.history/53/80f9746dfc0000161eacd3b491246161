@@ -1,0 +1,334 @@
+/* MotionPattern.java
+ *
+ * AUTHOR
+ * Will Weaver
+ * Computer Engineering Major
+ * Mechanical Engineering Senior Capstone Design Team 3
+ * Michigan Technological University
+ *
+ * SPONSOR
+ * Mitch Baldwin
+ * Stryker Instruments
+ *
+ * DESCRIPTION
+ * Represents and manipulates motion patterns which can be modified by the JamPot GUI
+ * and sent to the JamJel device.
+ */
+
+package application;
+
+import java.lang.IllegalArgumentException;
+
+public class MotionPattern {
+	private static final byte[] SINEWAVE = intToByteArray(new int[] {
+		0x80,0x83,0x86,0x89,0x8c,0x8f,0x92,0x95,0x98,0x9c,0x9f,0xa2,0xa5,0xa8,0xab,0xae,
+		0xb0,0xb3,0xb6,0xb9,0xbc,0xbf,0xc1,0xc4,0xc7,0xc9,0xcc,0xce,0xd1,0xd3,0xd5,0xd8,
+		0xda,0xdc,0xde,0xe0,0xe2,0xe4,0xe6,0xe8,0xea,0xec,0xed,0xef,0xf0,0xf2,0xf3,0xf5,
+		0xf6,0xf7,0xf8,0xf9,0xfa,0xfb,0xfc,0xfc,0xfd,0xfe,0xfe,0xff,0xff,0xff,0xff,0xff,
+		0xff,0xff,0xff,0xff,0xff,0xff,0xfe,0xfe,0xfd,0xfc,0xfc,0xfb,0xfa,0xf9,0xf8,0xf7,
+		0xf6,0xf5,0xf3,0xf2,0xf0,0xef,0xed,0xec,0xea,0xe8,0xe6,0xe4,0xe2,0xe0,0xde,0xdc,
+		0xda,0xd8,0xd5,0xd3,0xd1,0xce,0xcc,0xc9,0xc7,0xc4,0xc1,0xbf,0xbc,0xb9,0xb6,0xb3,
+		0xb0,0xae,0xab,0xa8,0xa5,0xa2,0x9f,0x9c,0x98,0x95,0x92,0x8f,0x8c,0x89,0x86,0x83,
+		0x80,0x7c,0x79,0x76,0x73,0x70,0x6d,0x6a,0x67,0x63,0x60,0x5d,0x5a,0x57,0x54,0x51,
+		0x4f,0x4c,0x49,0x46,0x43,0x40,0x3e,0x3b,0x38,0x36,0x33,0x31,0x2e,0x2c,0x2a,0x27,
+		0x25,0x23,0x21,0x1f,0x1d,0x1b,0x19,0x17,0x15,0x13,0x12,0x10,0x0f,0x0d,0x0c,0x0a,
+		0x09,0x08,0x07,0x06,0x05,0x04,0x03,0x03,0x02,0x01,0x01,0x00,0x00,0x00,0x00,0x00,
+		0x00,0x00,0x00,0x00,0x00,0x00,0x01,0x01,0x02,0x03,0x03,0x04,0x05,0x06,0x07,0x08,
+		0x09,0x0a,0x0c,0x0d,0x0f,0x10,0x12,0x13,0x15,0x17,0x19,0x1b,0x1d,0x1f,0x21,0x23,
+		0x25,0x27,0x2a,0x2c,0x2e,0x31,0x33,0x36,0x38,0x3b,0x3e,0x40,0x43,0x46,0x49,0x4c,
+		0x4f,0x51,0x54,0x57,0x5a,0x5d,0x60,0x63,0x67,0x6a,0x6d,0x70,0x73,0x76,0x79,0x7c});
+	
+	// A(t) = sin(t)
+	// B(t) = 0.5sin(t-180)
+	// C(t) = 0.5sin(t-180)
+	public static final MotionPattern LINE_A = new MotionPattern(scaleArray(getSineWaveShifted(0), 1),
+																 scaleArray(getSineWaveShifted(180), 0.5), 
+																 scaleArray(getSineWaveShifted(180), 0.5),
+																 (short) 100, (short) 1);
+	
+	// A(t) = 0.5sin(t-180)
+	// B(t) = sin(t)
+	// C(t) = 0.5sin(t-180)
+	public static final MotionPattern LINE_B = new MotionPattern(scaleArray(getSineWaveShifted(180), 0.5),
+																 scaleArray(getSineWaveShifted(0), 1),
+																 scaleArray(getSineWaveShifted(180), 0.5),
+																 (short) 100, (short) 1);
+
+	// A(t) = 0.5sin(t-180)
+	// B(t) = 0.5sin(t-180)
+	// C(t) = sin(t)
+	public static final MotionPattern LINE_C = new MotionPattern(scaleArray(getSineWaveShifted(180), 0.5),
+																 scaleArray(getSineWaveShifted(180), 0.5),
+																 scaleArray(getSineWaveShifted(0), 1),
+																 (short) 100, (short) 1);
+	
+	// A(t) = sin(t)
+	// B(t) = sin(t+120)
+	// C(t) = sin(t+240)
+	public static final MotionPattern CIRCLE = new MotionPattern(scaleArray(getSineWaveShifted(0), 1),
+																 scaleArray(getSineWaveShifted(120), 1),
+																 scaleArray(getSineWaveShifted(240), 1),
+																 (short) 100, (short) 1);
+
+	private static final int TYPE_LEN = 1;
+	private static final int SIZE_LEN = 2;
+	private static final int DEL_LEN = 1;
+	private static final int SHORT_LEN = 1;
+	private static final byte MSG_TYPE = 1;
+	private static final byte FREQ_TYPE = 2;
+	private static final byte AMP_TYPE = 3;
+	private static final byte DEL = (byte) 0xAA;
+	private short length;
+	private byte[] piezoStackA;
+	private byte[] piezoStackB;
+	private byte[] piezoStackC;
+	private short frequency;
+	private short amplitude;
+	
+	/* MotionPattern
+	 * Author: Will Weaver
+	 * Func:   A zero-argument constructor for a new MotionPattern
+	 * Params: [None]
+	 * Return: [None]
+	 */
+	public MotionPattern() {
+		length = 0;
+		piezoStackA = null;
+		piezoStackB = null;
+		piezoStackC = null;
+		frequency = 0;
+		amplitude = 0;
+	}
+	
+	/* MotionPattern
+	 * Author: Will Weaver
+	 * Func:   Constructs a new MotionPattern with all properties provided
+	 * Params: arrayA   : Bytes to be output to piezoelectric stack A
+	 *         arrayB   : Bytes to be output to piezoelectric stack B
+	 *         arrayC   : Bytes to be output to piezoelectric stack C
+	 *         freq     : Frequency of the entire waveform
+	 *         amp      : Amplitude of the waveform
+	 * Return: [None]
+	 */
+	public MotionPattern(byte[] arrayA, byte[] arrayB, byte[] arrayC, short freq, short amp) {
+		if (arrayA.length != arrayB.length || arrayA.length != arrayC.length)
+			throw new IllegalArgumentException("Mismatching array lengths");
+
+		this.piezoStackA = arrayA;
+		this.piezoStackB = arrayB;
+		this.piezoStackC = arrayC;
+		this.frequency = freq;
+		this.amplitude = amp;
+		this.length = (short) arrayA.length;
+	}
+	
+	/* setLength
+	 * Author: Will Weaver
+	 * Func:   Sets a new length of the waveform and allocates new arrays
+	 * Params: length   : The new length
+	 * Return: [None]
+	 */
+	public void setLength(short length) {
+		this.length = length;
+		piezoStackA = new byte[length];
+		piezoStackB = new byte[length];
+		piezoStackC = new byte[length];
+	}
+	
+	/* setPiezoStackA
+	 * Author: Will Weaver
+	 * Func:   Copies new values into the waveform for piezoelectric stack A.
+	 *         If the length is different than any previously set length,
+	 *         setLength must be called prior to this function.
+	 * Params: length   : The new length
+	 * Return: [None]
+	 */
+	public void setPiezoStackA(byte[] array) {
+		if (array.length != length)
+			throw new IllegalArgumentException("Array length does not match set length");
+
+		for (int i = 0; i < length; i++)
+			piezoStackA[i] = array[i];
+	}
+	
+	/* setPiezoStackB
+	 * Author: Will Weaver
+	 * Func:   Copies new values into the waveform for piezoelectric stack B.
+	 *         If the length is different than any previously set length,
+	 *         setLength must be called prior to this function.
+	 * Params: length   : The new length
+	 * Return: [None]
+	 */
+	public void setPiezoStackB(byte[] array) {
+		if (array.length != length)
+			throw new IllegalArgumentException("Array length does not match set length");
+
+		for (int i = 0; i < length; i++)
+			piezoStackB[i] = array[i];
+	}
+	
+	/* setPiezoStackC
+	 * Author: Will Weaver
+	 * Func:   Copies new values into the waveform for piezoelectric stack C.
+	 *         If the length is different than any previously set length,
+	 *         setLength must be called prior to this function.
+	 * Params: length   : The new length
+	 * Return: [None]
+	 */
+	public void setPiezoStackC(byte[] array) {
+		if (array.length != length)
+			throw new IllegalArgumentException("Array length does not match set length");
+
+		for (int i = 0; i < length; i++)
+			piezoStackC[i] = array[i];
+	}
+	
+	/* setFrequency
+	 * Author: Will Weaver
+	 * Func:   Sets a new frequency of the waveform
+	 * Params: freq   : The new frequency
+	 * Return: [None]
+	 */
+	public void setFrequency(short freq) {
+		this.frequency = freq;
+	}
+	
+	/* setAmplitude
+	 * Author: Will Weaver
+	 * Func:   Sets a new amplitude of the waveform
+	 * Params: amp   : The new amplitude
+	 * Return: [None]
+	 */
+	public void setAmplitude(short amp) {
+		this.amplitude = amp;
+	}
+	
+	/* getAmplitudeMessage
+	 * Author: Will Weaver
+	 * Func:   Generates the byte-level message to be sent to the JamJel device
+	 *         to change the amplitude of the waveform
+	 * Params: [None]
+	 * Return: The JamJel-ready command to change the amplitude
+	 */
+	public byte[] getAmplitudeMessage() {
+		byte[] msg = new byte[TYPE_LEN + SHORT_LEN];
+		int msgIndex = 0;
+		
+		msg[msgIndex++] = AMP_TYPE;
+		for (byte b : bytize(amplitude, SHORT_LEN))
+			msg[msgIndex++] = b;
+		
+		return msg;
+	}
+	
+	/* getFrequencyMessage
+	 * Author: Will Weaver
+	 * Func:   Generates the byte-level message to be sent to the JamJel device
+	 *         to change the frequency of the waveform
+	 * Params: [None]
+	 * Return: The JamJel-ready command to change the frequency
+	 */
+	public byte[] getFrequencyMessage() {
+		byte[] msg = new byte[TYPE_LEN + SHORT_LEN];
+		int msgIndex = 0;
+		
+		msg[msgIndex++] = FREQ_TYPE;
+		for (byte b : bytize(frequency, SHORT_LEN))
+			msg[msgIndex++] = b;
+		
+		return msg;
+	}
+	
+	/* getPatternMessage
+	 * Author: Will Weaver
+	 * Func:   Generates the byte-level message to be sent to the JamJel device
+	 *         to change the overall motion pattern
+	 * Params: [None]
+	 * Return: The JamJel-ready command to change the pattern
+	 */
+	public byte[] getPatternMessage() {
+		byte[] msg = new byte[TYPE_LEN + SIZE_LEN +
+		                      length + DEL_LEN +
+		                      length + DEL_LEN +
+		                      length + DEL_LEN];
+		int msgIndex = 0;
+		
+		// Message header
+		msg[msgIndex++] = MSG_TYPE;
+		for (byte b : bytize(length, SIZE_LEN))
+			msg[msgIndex++] = b;
+		
+		// Piezostack A
+		for (byte b : piezoStackA)
+			msg[msgIndex++] = b;
+		msg[msgIndex++] = DEL;
+		
+		// Piezostack B
+		for (byte b : piezoStackB)
+			msg[msgIndex++] = b;
+		msg[msgIndex++] = DEL;
+		
+		// Piezostack C
+		for (byte b : piezoStackC)
+			msg[msgIndex++] = b;
+		msg[msgIndex++] = DEL;
+		
+		return msg;
+	}
+	
+	private static byte[] bytize(int value, int size) {
+		byte[] bytes = new byte[size];
+		for (int i = 0; i < size; i++)
+			bytes[0] = extractByte(value, i);
+		return bytes;
+	}
+	
+	/* extractByte
+	 * Author: Will Weaver
+	 * Func:   Returns the byte at the specified byte index in a larger variable
+	 * Params: value : The variable from which a byte should be extracted
+	 *         index : The byte index to extract
+	 * Return: The byte extracted from the variable
+	 */
+	private static byte extractByte(int value, int index) {
+		int bitShift = index * 8;
+		int mask = ((1 << 8) - 1) << bitShift;
+		return (byte) ((mask | value) >> bitShift);
+	}
+
+	private static byte[] getSineWaveShifted(double degreeShift) {
+		byte[] newWave = new byte[SINEWAVE.length];
+
+		// Normalizes the phase shift to a positive number less than the whole
+		// Converts the phase shift from degrees to an array index
+		short indexShift = (short) (((degreeShift % 360.0) / 360.0) * SINEWAVE.length);
+
+		// Fills in the first n values in the new wave with the last n values of
+		// the reference wave, where n = indexShift.
+		for (short i = 0; i < indexShift; i++)
+			newWave[i] = SINEWAVE[SINEWAVE.length - indexShift + i];
+
+		// Fills in the last m values in the new wave with the first m values of
+		// the reference wave, where m = SINEWAVE_LENGTH - indexShift
+		for (short i = indexShift; i < SINEWAVE.length; i++)
+			newWave[i] = SINEWAVE[i - indexShift];
+
+		return newWave;
+	}
+
+	private static byte[] scaleArray(byte[] array, double factor) {
+		for (int i = 0; i < array.length; i++)
+			array[i] = (byte) (((((double) array[i]) - 128) * factor) + 128);
+
+		return array;
+	}
+	
+	private static byte[] intToByteArray(int[] array) {
+		byte[] newArray = new byte[array.length];
+		
+		for (int i = 0; i < array.length; i++)
+			newArray[i] = (byte) array[i];
+		
+		return newArray;
+	}
+}

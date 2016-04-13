@@ -1,3 +1,19 @@
+/* NavButton.java
+ *
+ * AUTHOR
+ * Will Weaver
+ * Computer Engineering Major
+ * Mechanical Engineering Senior Capstone Design Team 3
+ * Michigan Technological University
+ *
+ * SPONSOR
+ * Mitch Baldwin
+ * Stryker Instruments
+ *
+ * DESCRIPTION
+ * Represents a button on screen used to navigate to other screens.
+ */
+
 package application;
 
 import javafx.event.ActionEvent;

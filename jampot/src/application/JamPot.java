@@ -1,3 +1,20 @@
+/* JamPot.java
+ *
+ * AUTHOR
+ * Will Weaver
+ * Computer Engineering Major
+ * Mechanical Engineering Senior Capstone Design Team 3
+ * Michigan Technological University
+ *
+ * SPONSOR
+ * Mitch Baldwin
+ * Stryker Instruments
+ *
+ * DESCRIPTION
+ * Provides a GUI for interacting with the JamJel device by generating and
+ * modifying motion patterns.
+ */
+
 package application;
 
 import javafx.application.Application;
