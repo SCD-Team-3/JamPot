@@ -1,0 +1,17 @@
+package application;
+
+import javafx.scene.Node;
+import javafx.scene.layout.Pane;
+
+public class HomePane extends Pane {
+
+	public HomePane() {
+		// TODO Auto-generated constructor stub
+	}
+
+	public HomePane(Node... arg0) {
+		super(arg0);
+		// TODO Auto-generated constructor stub
+	}
+
+}

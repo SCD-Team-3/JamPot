@@ -5,13 +5,15 @@
 	<section name="FatJarPackageWizard">
 		<item value="C:\Users\will__000\Google Drive\Documents\MEEM4911\JamPot" key="FatJarPackageWizardPage.ANTSCRIPT_LOCATION"/>
 		<item value="JamPot - JamPot" key="FatJarPackageWizardPage.LAUNCH_CONFIGURATION_SELECTION_NAME"/>
-		<item value="M:\mesd_team3\GUI\demo_040716.jar" key="FatJarPackageWizardPage.DESTINATION_PATH_SELECTION"/>
+		<item value="C:\Users\will__000\Google Drive\Documents\MEEM4911\JamPot\demo_041816.jar" key="FatJarPackageWizardPage.DESTINATION_PATH_SELECTION"/>
 		<item value="false" key="FatJarPackageWizardPage.ANTSCRIPT_SAVE"/>
 		<item value="1" key="FatJarPackageWizardPage.LIBRARY_HANDLING"/>
 		<list key="FatJarPackageWizardPage.DESTINATION_NAMES_ID">
+			<item value="C:\Users\will__000\Google Drive\Documents\MEEM4911\JamPot\demo_041816.jar"/>
 			<item value="M:\mesd_team3\GUI\demo_040716.jar"/>
 		</list>
 		<list key="FatJarPackageWizardPage.ANTSCRIPT_LOCATION_HISTORY">
+			<item value="C:\Users\will__000\Google Drive\Documents\MEEM4911\JamPot.xml"/>
 			<item value=".xml"/>
 		</list>
 	</section>
@@ -30,6 +32,7 @@
 	</section>
 	<section name="OptionalMessageDialog.hide.">
 		<item value="true" key="org.eclipse.jdt.ui.typecomment.deprecated"/>
+		<item value="true" key="RunnableJar.export.ipwarning"/>
 	</section>
 	<section name="quick_assist_proposal_size">
 	</section>

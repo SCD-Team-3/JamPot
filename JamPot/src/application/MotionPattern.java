@@ -23,39 +23,7 @@ import javafx.scene.paint.Color;
 
 public class MotionPattern {
 	
-	// A(t) = sin(t)
-	// B(t) = 0.5sin(t-180)
-	// C(t) = 0.5sin(t-180)
-	public static final MotionPattern LINE_A = new MotionPattern(scaleArray(getSineWaveShifted(0), 1),
-																 scaleArray(getSineWaveShifted(180), 0.5), 
-																 scaleArray(getSineWaveShifted(180), 0.5),
-																 (short) 100, (short) 1);
-	
-	// A(t) = 0.5sin(t-180)
-	// B(t) = sin(t)
-	// C(t) = 0.5sin(t-180)
-	public static final MotionPattern LINE_B = new MotionPattern(scaleArray(getSineWaveShifted(180), 0.5),
-																 scaleArray(getSineWaveShifted(0), 1),
-																 scaleArray(getSineWaveShifted(180), 0.5),
-																 (short) 100, (short) 1);
-
-	// A(t) = 0.5sin(t-180)
-	// B(t) = 0.5sin(t-180)
-	// C(t) = sin(t)
-	public static final MotionPattern LINE_C = new MotionPattern(scaleArray(getSineWaveShifted(180), 0.5),
-																 scaleArray(getSineWaveShifted(180), 0.5),
-																 scaleArray(getSineWaveShifted(0), 1),
-																 (short) 100, (short) 1);
-	
-	// A(t) = sin(t)
-	// B(t) = sin(t+120)
-	// C(t) = sin(t+240)
-	public static final MotionPattern CIRCLE = new MotionPattern(scaleArray(getSineWaveShifted(0), 1),
-																 scaleArray(getSineWaveShifted(120), 1),
-																 scaleArray(getSineWaveShifted(240), 1),
-																 (short) 100, (short) 1);
-	
-	private static final byte[] SINEWAVE = intToByteArray(new int[] {
+	private static final byte[] SINEWAVE = shortToByteArray(new short[] {
 			0x80,0x83,0x86,0x89,0x8c,0x8f,0x92,0x95,0x98,0x9c,0x9f,0xa2,0xa5,0xa8,0xab,0xae,
 			0xb0,0xb3,0xb6,0xb9,0xbc,0xbf,0xc1,0xc4,0xc7,0xc9,0xcc,0xce,0xd1,0xd3,0xd5,0xd8,
 			0xda,0xdc,0xde,0xe0,0xe2,0xe4,0xe6,0xe8,0xea,0xec,0xed,0xef,0xf0,0xf2,0xf3,0xf5,
@@ -72,6 +40,38 @@ public class MotionPattern {
 			0x09,0x0a,0x0c,0x0d,0x0f,0x10,0x12,0x13,0x15,0x17,0x19,0x1b,0x1d,0x1f,0x21,0x23,
 			0x25,0x27,0x2a,0x2c,0x2e,0x31,0x33,0x36,0x38,0x3b,0x3e,0x40,0x43,0x46,0x49,0x4c,
 			0x4f,0x51,0x54,0x57,0x5a,0x5d,0x60,0x63,0x67,0x6a,0x6d,0x70,0x73,0x76,0x79,0x7c});
+	
+	// A(t) = sin(t)
+	// B(t) = 0.5sin(t-180)
+	// C(t) = 0.5sin(t-180)
+	public static final MotionPattern LINE_A = new MotionPattern(scaleArray(getSineWaveShifted(0), 1),
+																 scaleArray(getSineWaveShifted(180), 0.5), 
+																 scaleArray(getSineWaveShifted(180), 0.5),
+																 (short) 100, (short) 65535);
+	
+	// A(t) = 0.5sin(t-180)
+	// B(t) = sin(t)
+	// C(t) = 0.5sin(t-180)
+	public static final MotionPattern LINE_B = new MotionPattern(scaleArray(getSineWaveShifted(180), 0.5),
+																 scaleArray(getSineWaveShifted(0), 1),
+																 scaleArray(getSineWaveShifted(180), 0.5),
+																 (short) 100, (short) 65535);
+
+	// A(t) = 0.5sin(t-180)
+	// B(t) = 0.5sin(t-180)
+	// C(t) = sin(t)
+	public static final MotionPattern LINE_C = new MotionPattern(scaleArray(getSineWaveShifted(180), 0.5),
+																 scaleArray(getSineWaveShifted(180), 0.5),
+																 scaleArray(getSineWaveShifted(0), 1),
+																 (short) 100, (short) 65535);
+	
+	// A(t) = sin(t)
+	// B(t) = sin(t+120)
+	// C(t) = sin(t+240)
+	public static final MotionPattern CIRCLE = new MotionPattern(scaleArray(getSineWaveShifted(0), 1),
+																 scaleArray(getSineWaveShifted(120), 1),
+																 scaleArray(getSineWaveShifted(240), 1),
+																 (short) 100, (short) 65535);
 
 	private static final int TYPE_LEN = 1;
 	private static final int SIZE_LEN = 2;
@@ -202,6 +202,16 @@ public class MotionPattern {
 		this.frequency = freq;
 	}
 	
+	/* getFrequency
+	 * Author: Will Weaver
+	 * Func:   Gets the current frequency of the waveform
+	 * Params: [None]
+	 * Return: The current frequency of the waveform
+	 */
+	public short getFrequency() {
+		return this.frequency;
+	}
+	
 	/* setAmplitude
 	 * Author: Will Weaver
 	 * Func:   Sets a new amplitude of the waveform
@@ -210,6 +220,16 @@ public class MotionPattern {
 	 */
 	public void setAmplitude(short amp) {
 		this.amplitude = amp;
+	}
+	
+	/* getAmplitude
+	 * Author: Will Weaver
+	 * Func:   Gets the current amplitude of the waveform
+	 * Params: [None]
+	 * Return: The current amplitude of the waveform
+	 */
+	public short getAmplitude() {
+		return this.amplitude;
 	}
 	
 	/* getAmplitudeMessage
@@ -306,11 +326,21 @@ public class MotionPattern {
 		double[] xPoints = new double[length];
 		double[] yPoints = new double[length];
 		for (int i = 0; i < length; i++) {
-
+			
+			// Convert unsigned bytes into signed ints
+			int aVal = ((int) piezoStackA[i]) & 0xFF;
+			int bVal = ((int) piezoStackB[i]) & 0xFF;
+			int cVal = ((int) piezoStackC[i]) & 0xFF;
+			
 			// Normalize the stack vectors to magnitude range +/-1
-			double aPct = ((double) piezoStackA[i] - 128) / 127;
-			double bPct = ((double) piezoStackB[i] - 128) / 127;
-			double cPct = ((double) piezoStackC[i] - 128) / 127;
+			double aPct = ((double) aVal - 128) / 127;
+			double bPct = ((double) bVal - 128) / 127;
+			double cPct = ((double) cVal - 128) / 127;
+			
+			// Scale values with amplitude
+			aPct *= (((double) (((int) amplitude) & 0xFFFF)) / 65535);
+			bPct *= (((double) (((int) amplitude) & 0xFFFF)) / 65535);
+			cPct *= (((double) (((int) amplitude) & 0xFFFF)) / 65535);
 
 			// Add the vectors to produce cartesian coordinates
 			double x = PIEZOSTACKA_X * aPct + PIEZOSTACKB_X * bPct + PIEZOSTACKC_X * cPct;
@@ -406,7 +436,7 @@ public class MotionPattern {
 	 * Params: array  : The int array to be cast
 	 * Return: The byte array
 	 */
-	private static byte[] intToByteArray(int[] array) {
+	private static byte[] shortToByteArray(short[] array) {
 		byte[] newArray = new byte[array.length];
 		
 		for (int i = 0; i < array.length; i++)
