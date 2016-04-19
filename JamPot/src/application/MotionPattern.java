@@ -18,6 +18,8 @@
 package application;
 
 import java.lang.IllegalArgumentException;
+import javafx.scene.canvas.*;
+import javafx.scene.paint.Color;
 
 public class MotionPattern {
 	
@@ -79,6 +81,12 @@ public class MotionPattern {
 	private static final byte FREQ_TYPE = 2;
 	private static final byte AMP_TYPE = 3;
 	private static final byte DEL = (byte) 0xAA;
+	private static final double PIEZOSTACKA_X = 1;
+	private static final double PIEZOSTACKA_Y = 0;
+	private static final double PIEZOSTACKB_X = -0.5;
+	private static final double PIEZOSTACKB_Y = 0.86602540378;
+	private static final double PIEZOSTACKC_X = -0.5;
+	private static final double PIEZOSTACKC_Y = -0.86602540378;
 	private short length;
 	private byte[] piezoStackA;
 	private byte[] piezoStackB;
@@ -275,6 +283,54 @@ public class MotionPattern {
 		msg[msgIndex++] = DEL;
 		
 		return msg;
+	}
+
+	/* getImage
+	 * Author: Will Weaver
+	 * Func:   Generates an image of the line traced by the cutting tip in the
+	 *         current motion pattern
+	 * Params: width     : The width of the image
+	 *         height    : The height of the image
+	 *         bgColor   : The color of the image background
+	 *         lineColor : The color of the trace line
+	 *         lineWidth : The width (in pixels) of the trace line
+	 * Return: The image of the motion pattern as a Canvas
+	 */
+	public Canvas getImage(int width, int height, Color bgColor, Color lineColor, int lineWidth) {
+		Canvas image = new Canvas(width, height);			// Create the image to draw on
+		GraphicsContext gc = image.getGraphicsContext2D();	// Enables modification of the image
+
+		gc.setFill(bgColor);
+
+		// Convert piezo arrays into point arrays
+		double[] xPoints = new double[length];
+		double[] yPoints = new double[length];
+		for (int i = 0; i < length; i++) {
+
+			// Normalize the stack vectors to magnitude range +/-1
+			double aPct = ((double) piezoStackA[i] - 128) / 127;
+			double bPct = ((double) piezoStackB[i] - 128) / 127;
+			double cPct = ((double) piezoStackC[i] - 128) / 127;
+
+			// Add the vectors to produce cartesian coordinates
+			double x = PIEZOSTACKA_X * aPct + PIEZOSTACKB_X * bPct + PIEZOSTACKC_X * cPct;
+			double y = PIEZOSTACKA_Y * aPct + PIEZOSTACKB_Y * bPct + PIEZOSTACKC_Y * cPct;
+
+			// Normalize the coordinates to magnitude range +/- 1
+			x = x / 2;
+			y = y / 2;
+
+			// Convert cartesian coordinates to image coordinates
+			xPoints[i] = x * (width / 2) + (width / 2);
+			yPoints[i] = y * (height / 2) + (height / 2);
+		}
+
+		// Draw polygon approximation of motion pattern
+		gc.setStroke(lineColor);
+		gc.setLineWidth(lineWidth);
+		gc.strokePolygon(xPoints, yPoints, length);
+
+		return image;
 	}
 	
 	/* extractByte
