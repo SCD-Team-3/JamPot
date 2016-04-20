@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <qualifiedTypeNameHistroy>
-<fullyQualifiedTypeName name="javafx.scene.layout.Pane"/>
 <fullyQualifiedTypeName name="javafx.scene.Group"/>
 <fullyQualifiedTypeName name="javafx.event.EventHandler"/>
 <fullyQualifiedTypeName name="javafx.event.ActionEvent"/>
@@ -25,4 +24,6 @@
 <fullyQualifiedTypeName name="javafx.scene.control.TextField"/>
 <fullyQualifiedTypeName name="java.lang.IllegalArgumentException"/>
 <fullyQualifiedTypeName name="javafx.scene.canvas.Canvas"/>
+<fullyQualifiedTypeName name="javafx.scene.layout.Pane"/>
+<fullyQualifiedTypeName name="java.util.ArrayList"/>
 </qualifiedTypeNameHistroy>

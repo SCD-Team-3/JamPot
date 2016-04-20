@@ -1,0 +1,73 @@
+package application;
+
+import javafx.scene.canvas.Canvas;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
+
+public class EditPane extends Pane implements MotionPatternDisplayer {
+	
+	// Non-visible properties
+	private JamPot main;
+	private MotionPattern pattern;
+	
+	// On-Screen elements
+	private NavButton patternSelect;
+	private NavButton edit;
+	private NavButton save;
+	private QuickAccessGroup rotationGrp;
+	private QuickAccessGroup distortionGrp;
+	private Canvas patternImage;
+	
+	public EditPane(JamPot newMain, MotionPattern newPattern) {
+		main = newMain;
+		pattern = newPattern;
+		
+		Pane frame = new Pane();
+		frame.setBackground(new Background(new BackgroundFill(Color.rgb(26,26,26), null, null)));
+		
+		// Create & configure "Accept" button
+		NavButton accept = new NavButton("", 125, 130, e->accept());
+		Image ok = new Image("file:accept.png", 35, 35, true, true);
+		accept.setGraphic(new ImageView(ok));
+		frame.getChildren().add(accept);
+		
+		// Create & configure "Cancel" button
+		NavButton cancel = new NavButton("", 335, 130, e->cancel());
+		Image x = new Image("file:cancel.png", 35, 35, true, true);
+		cancel.setGraphic(new ImageView(x));
+		frame.getChildren().add(cancel);		
+		
+		// Create and configure Rotation grouping
+		Attribute rotation = new Attribute("Rotation", "%", 0, 0, 100);
+		QuickAccessGroup rotationGrp = new QuickAccessGroup(rotation, 535, 10);
+		frame.getChildren().add(rotationGrp);	
+		
+		// Create and configure Distortion grouping
+		Attribute distortion = new Attribute("Distortion", "%", 0, 0, 200);
+		QuickAccessGroup distortionGrp = new QuickAccessGroup(distortion, 535, 275);
+		frame.getChildren().add(distortionGrp);	
+	}
+	
+	public void accept() {
+		
+	}
+	
+	public void cancel() {
+		
+	}
+	
+	public void update(MotionPattern callingPattern) {
+		if (callingPattern != pattern)
+			throw new IllegalArgumentException("Calling pattern does not match current pattern");
+		
+		getChildren().remove(patternImage);
+		patternImage = pattern.getImage(515, 515, Color.rgb(26, 26, 26), Color.WHITE, 2);
+		patternImage.setTranslateX(10);
+		patternImage.setTranslateY(10);
+		getChildren().add(patternImage);
+	}
+}

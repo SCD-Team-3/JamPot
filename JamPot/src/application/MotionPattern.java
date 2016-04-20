@@ -44,7 +44,8 @@ public class MotionPattern {
 	// A(t) = sin(t)
 	// B(t) = 0.5sin(t-180)
 	// C(t) = 0.5sin(t-180)
-	public static final MotionPattern LINE_A = new MotionPattern(scaleArray(getSineWaveShifted(0), 1),
+	public static final MotionPattern LINE_A = new MotionPattern("Line A",
+																 scaleArray(getSineWaveShifted(0), 1),
 																 scaleArray(getSineWaveShifted(180), 0.5), 
 																 scaleArray(getSineWaveShifted(180), 0.5),
 																 (short) 100, (short) 65535);
@@ -52,7 +53,8 @@ public class MotionPattern {
 	// A(t) = 0.5sin(t-180)
 	// B(t) = sin(t)
 	// C(t) = 0.5sin(t-180)
-	public static final MotionPattern LINE_B = new MotionPattern(scaleArray(getSineWaveShifted(180), 0.5),
+	public static final MotionPattern LINE_B = new MotionPattern("Line B",
+			 													 scaleArray(getSineWaveShifted(180), 0.5),
 																 scaleArray(getSineWaveShifted(0), 1),
 																 scaleArray(getSineWaveShifted(180), 0.5),
 																 (short) 100, (short) 65535);
@@ -60,7 +62,8 @@ public class MotionPattern {
 	// A(t) = 0.5sin(t-180)
 	// B(t) = 0.5sin(t-180)
 	// C(t) = sin(t)
-	public static final MotionPattern LINE_C = new MotionPattern(scaleArray(getSineWaveShifted(180), 0.5),
+	public static final MotionPattern LINE_C = new MotionPattern("Line C",
+			 													 scaleArray(getSineWaveShifted(180), 0.5),
 																 scaleArray(getSineWaveShifted(180), 0.5),
 																 scaleArray(getSineWaveShifted(0), 1),
 																 (short) 100, (short) 65535);
@@ -68,7 +71,8 @@ public class MotionPattern {
 	// A(t) = sin(t)
 	// B(t) = sin(t+120)
 	// C(t) = sin(t+240)
-	public static final MotionPattern CIRCLE = new MotionPattern(scaleArray(getSineWaveShifted(0), 1),
+	public static final MotionPattern CIRCLE = new MotionPattern("Circle",
+			 													 scaleArray(getSineWaveShifted(0), 1),
 																 scaleArray(getSineWaveShifted(120), 1),
 																 scaleArray(getSineWaveShifted(240), 1),
 																 (short) 100, (short) 65535);
@@ -87,12 +91,16 @@ public class MotionPattern {
 	private static final double PIEZOSTACKB_Y = 0.86602540378;
 	private static final double PIEZOSTACKC_X = -0.5;
 	private static final double PIEZOSTACKC_Y = -0.86602540378;
-	private short length;
-	private byte[] piezoStackA;
-	private byte[] piezoStackB;
-	private byte[] piezoStackC;
-	private short frequency;
-	private short amplitude;
+	private String name;
+	private short length = 0;
+	private byte[] piezoStackA = null;
+	private byte[] piezoStackB = null;
+	private byte[] piezoStackC = null;
+	private Attribute frequency = new Attribute("Frequency", "Hz", 100, 0, 999);
+	private Attribute amplitude = new Attribute("Amplitude", "%", 100, 0, 100);
+	private Attribute rotation = new Attribute("Rotation", "deg", 0, 0, 360);
+	private Attribute distortion = new Attribute("Distortion", "%", 0, 0, 100);
+	private MotionPatternDisplayer displayer;
 	
 	/* MotionPattern
 	 * Author: Will Weaver
@@ -100,13 +108,8 @@ public class MotionPattern {
 	 * Params: [None]
 	 * Return: [None]
 	 */
-	public MotionPattern() {
-		length = 0;
-		piezoStackA = null;
-		piezoStackB = null;
-		piezoStackC = null;
-		frequency = 0;
-		amplitude = 0;
+	public MotionPattern(String name) {
+		this.name = name;
 	}
 	
 	/* MotionPattern
@@ -119,16 +122,32 @@ public class MotionPattern {
 	 *         amp      : Amplitude of the waveform
 	 * Return: [None]
 	 */
-	public MotionPattern(byte[] arrayA, byte[] arrayB, byte[] arrayC, short freq, short amp) {
+	public MotionPattern(String name, byte[] arrayA, byte[] arrayB, byte[] arrayC, short freq, double amp) {
 		if (arrayA.length != arrayB.length || arrayA.length != arrayC.length)
 			throw new IllegalArgumentException("Mismatching array lengths");
-
+		
+		if (amp > 1)
+			throw new IllegalArgumentException("Invalid amplitude");
+		
+		this.name = name;
 		this.piezoStackA = arrayA;
 		this.piezoStackB = arrayB;
 		this.piezoStackC = arrayC;
-		this.frequency = freq;
-		this.amplitude = amp;
+		this.frequency.setValue(freq);
+		this.amplitude.setValue(amp);
 		this.length = (short) arrayA.length;
+	}
+	
+	public String getName() {
+		return name;
+	}
+	
+	public void setName(String name) {
+		this.name = name;
+	}
+	
+	public void setDisplayer(MotionPatternDisplayer newDisplayer) {
+		displayer = newDisplayer;
 	}
 	
 	/* setLength
@@ -198,8 +217,8 @@ public class MotionPattern {
 	 * Params: freq   : The new frequency
 	 * Return: [None]
 	 */
-	public void setFrequency(short freq) {
-		this.frequency = freq;
+	public void setFrequency(int freq) {
+		this.frequency.setValue(freq);
 	}
 	
 	/* getFrequency
@@ -208,7 +227,7 @@ public class MotionPattern {
 	 * Params: [None]
 	 * Return: The current frequency of the waveform
 	 */
-	public short getFrequency() {
+	public Attribute getFrequency() {
 		return this.frequency;
 	}
 	
@@ -218,18 +237,58 @@ public class MotionPattern {
 	 * Params: amp   : The new amplitude
 	 * Return: [None]
 	 */
-	public void setAmplitude(short amp) {
-		this.amplitude = amp;
+	public void setAmplitude(double amp) {
+		this.amplitude.setValue(amp);
 	}
 	
 	/* getAmplitude
 	 * Author: Will Weaver
-	 * Func:   Gets the current amplitude of the waveform
+	 * Func:   Gets the current amplitude of the waveform as a fraction of max
 	 * Params: [None]
 	 * Return: The current amplitude of the waveform
 	 */
-	public short getAmplitude() {
-		return this.amplitude;
+	public Attribute getAmplitude() {
+		return amplitude;
+	}
+	
+	/* setRotation
+	 * Author: Will Weaver
+	 * Func:   Sets a new rotation of the waveform
+	 * Params: amp   : The new rotation in degrees
+	 * Return: [None]
+	 */
+	public void setRotation(double rot) {
+		this.rotation.setValue(rot);
+	}
+	
+	/* getRotation
+	 * Author: Will Weaver
+	 * Func:   Gets the current rotation of the waveform in degrees
+	 * Params: [None]
+	 * Return: The current rotation of the waveform
+	 */
+	public Attribute getRotation() {
+		return rotation;
+	}
+	
+	/* setDistortion
+	 * Author: Will Weaver
+	 * Func:   Sets a new distortion of the waveform
+	 * Params: amp   : The new distortion
+	 * Return: [None]
+	 */
+	public void setDistortion(double dist) {
+		this.distortion.setValue(dist);
+	}
+	
+	/* getDistortion
+	 * Author: Will Weaver
+	 * Func:   Gets the current distortion of the waveform
+	 * Params: [None]
+	 * Return: The current distortion of the waveform
+	 */
+	public Attribute getDistortion() {
+		return distortion;
 	}
 	
 	/* getAmplitudeMessage
@@ -244,7 +303,7 @@ public class MotionPattern {
 		int msgIndex = 0;
 		
 		msg[msgIndex++] = AMP_TYPE;
-		for (byte b : bytize(amplitude, SHORT_LEN))
+		for (byte b : bytize((short) (amplitude.getValue()*65535), SHORT_LEN))
 			msg[msgIndex++] = b;
 		
 		return msg;
@@ -262,7 +321,7 @@ public class MotionPattern {
 		int msgIndex = 0;
 		
 		msg[msgIndex++] = FREQ_TYPE;
-		for (byte b : bytize(frequency, SHORT_LEN))
+		for (byte b : bytize((short) frequency.getValue(), SHORT_LEN))
 			msg[msgIndex++] = b;
 		
 		return msg;
@@ -338,9 +397,9 @@ public class MotionPattern {
 			double cPct = ((double) cVal - 128) / 127;
 			
 			// Scale values with amplitude
-			aPct *= (((double) (((int) amplitude) & 0xFFFF)) / 65535);
-			bPct *= (((double) (((int) amplitude) & 0xFFFF)) / 65535);
-			cPct *= (((double) (((int) amplitude) & 0xFFFF)) / 65535);
+			aPct *= (((double) (((int) amplitude.getValue()*65535) & 0xFFFF)) / 65535);
+			bPct *= (((double) (((int) amplitude.getValue()*65535) & 0xFFFF)) / 65535);
+			cPct *= (((double) (((int) amplitude.getValue()*65535) & 0xFFFF)) / 65535);
 
 			// Add the vectors to produce cartesian coordinates
 			double x = PIEZOSTACKA_X * aPct + PIEZOSTACKB_X * bPct + PIEZOSTACKC_X * cPct;
@@ -361,6 +420,16 @@ public class MotionPattern {
 		gc.strokePolygon(xPoints, yPoints, length);
 
 		return image;
+	}
+	
+	/* update
+	 * Author: Will Weaver
+	 * Func:   Forces the current displayer to update its representation
+	 * Params: [None]
+	 * Return: [None]
+	 */
+	public void update() {
+		displayer.update(this);
 	}
 	
 	/* extractByte

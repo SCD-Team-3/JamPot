@@ -1,0 +1,7 @@
+package application;
+
+import javafx.layout.scene.Pane;
+
+public class EditPane extends Pane {
+
+}

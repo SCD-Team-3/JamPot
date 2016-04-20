@@ -1,0 +1,17 @@
+package application;
+
+import javafx.scene.Node;
+import javafx.scene.layout.Pane;
+
+public class KeyboardPane extends Pane {
+
+	public KeyboardPane() {
+		// TODO Auto-generated constructor stub
+	}
+
+	public KeyboardPane(Node... arg0) {
+		super(arg0);
+		// TODO Auto-generated constructor stub
+	}
+
+}

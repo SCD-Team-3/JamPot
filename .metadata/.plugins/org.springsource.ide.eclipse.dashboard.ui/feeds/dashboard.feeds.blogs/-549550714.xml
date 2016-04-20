@@ -5,7 +5,92 @@
   <link rel="self" href="https://spring.io/blog.atom" />
   <id>http://spring.io/blog.atom</id>
   <icon>https://spring.io/favicon.ico</icon>
-  <updated>2016-04-15T18:37:28Z</updated>
+  <updated>2016-04-19T13:37:00Z</updated>
+  <entry>
+    <title>Understanding Reactive types</title>
+    <link rel="alternate" href="https://spring.io/blog/2016/04/19/understanding-reactive-types" />
+    <category term="engineering" label="Engineering" />
+    <author>
+      <name>Sébastien Deleuze</name>
+    </author>
+    <id>tag:spring.io,2016-04-04:2450</id>
+    <updated>2016-04-19T13:37:00Z</updated>
+    <content type="html">&lt;p&gt;Following previous &lt;a href="https://spring.io/blog/2016/02/09/reactive-spring"&gt;Reactive Spring&lt;/a&gt; and &lt;a href="https://spring.io/blog/2016/03/11/reactor-core-2-5-becomes-a-unified-reactive-foundation-on-java-8"&gt;Reactor Core 2.5&lt;/a&gt; blog posts, I would like to explain why Reactive types are useful and how they compare to other asynchronous types, based on what we have learned while working on the Spring Framework 5 upcoming Reactive support.&lt;/p&gt;&lt;h2&gt;&lt;a href="#why-using-reactive-types" class="anchor" name="why-using-reactive-types"&gt;&lt;/a&gt;Why using Reactive types?&lt;/h2&gt;
+&lt;p&gt;Reactive types are not intended to allow you to process your requests or data faster, in fact they will introduce a small overhead compared to regular blocking processing. Their strength lies in their capacity to serve more request concurrently, and to handle operations with latency, such as requesting data from a remote server, more efficiently. They allow you to provide a better quality of service and a predictable capacity planning by dealing natively with time and latency without consuming more resources. Unlike traditional processing that blocks the current thread while waiting a result, a Reactive API that waits costs nothing, requests only the amount of data it is able to process and bring new capabilities since it deals with stream of data, not only with individual elements one by one.&lt;/p&gt;&lt;h2&gt;&lt;a href="#before-java-8" class="anchor" name="before-java-8"&gt;&lt;/a&gt;Before Java 8&lt;/h2&gt;
+&lt;p&gt;Before Java 8, asynchronous non-blocking behavior was not obvious to implement for at least two reasons. The first reason is that callback based API required verbose anonymous classes and are not easy to chain. The second reason is that &lt;a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Future.html"&gt;&lt;code&gt;Future&lt;/code&gt;&lt;/a&gt; type is asynchronous &lt;strong&gt;but&lt;/strong&gt; blocks the current thread until the computation completes when you try to get the result with the &lt;a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Future.html#get--"&gt;&lt;code&gt;get()&lt;/code&gt;&lt;/a&gt; method. That&amp;rsquo;s why Spring Framework 4.0 introduced &lt;a href="https://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/util/concurrent/ListenableFuture.html"&gt;&lt;code&gt;ListenableFuture&lt;/code&gt;&lt;/a&gt;, a &lt;code&gt;Future&lt;/code&gt; implementation that adds non-blocking callback-based capabilities.&lt;/p&gt;&lt;h2&gt;&lt;a href="#lambdas-completablefuture-and-stream" class="anchor" name="lambdas-completablefuture-and-stream"&gt;&lt;/a&gt;Lambdas, CompletableFuture and Stream&lt;/h2&gt;
+&lt;p&gt;Then Java 8 introduced lambdas and &lt;a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html"&gt;&lt;code&gt;CompletableFuture&lt;/code&gt;&lt;/a&gt;. Lambdas allow to write concise callbacks, while &lt;a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletionStage.html"&gt;&lt;code&gt;CompletionStage&lt;/code&gt;&lt;/a&gt; interface and &lt;a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html"&gt;&lt;code&gt;CompletableFuture&lt;/code&gt;&lt;/a&gt; class finally allows to deal with future in a non-blocking way and push-based fashion, while providing capabilities to chain such deferred result processing.&lt;/p&gt;
+&lt;p&gt;Java 8 also introduced &lt;a href="https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html"&gt;&lt;code&gt;Stream&lt;/code&gt;&lt;/a&gt;, which has been designed to deal efficiently with stream of data (including primitive types) that can be accessed with no or very little latency. It is pull-based, can only be used once, lacks time-related operations and can perform parallel computations but without being able to specify the thread pool to use. As explained by &lt;a href="http://stackoverflow.com/questions/17960656/is-it-possible-to-use-java-8-streams-api-for-asynchronous-processing/18826615#comment36545451_18826615"&gt;Brian Goetz&lt;/a&gt;,&lt;br/&gt;it has not been designed to deal with operation with latency, such as I/O operations. And that is where Reactive APIs like Reactor or RxJava come in.&lt;/p&gt;&lt;h2&gt;&lt;a href="#reactive-apis" class="anchor" name="reactive-apis"&gt;&lt;/a&gt;Reactive APIs&lt;/h2&gt;
+&lt;p&gt;Reactive APIs such as &lt;a href="https://projectreactor.io/"&gt;Reactor&lt;/a&gt; also provide operators like Java 8 Stream, but they work more generally with any stream sequence (not just Collections) and allow to define a pipeline of transforming operations that will apply to the data passing through it thanks to a handy fluent API and using lambdas. They are designed to handle both synchronous or asynchronous operations, and allow you to buffer, merge, concatenate, or apply a wide range of transformations to your data.&lt;/p&gt;
+&lt;p&gt;Initially Reactive APIs were only designed to deal with streams of data, i.e. N elements, for example, using Reactor&amp;rsquo;s &lt;a href="http://projectreactor.io/core/docs/api/reactor/core/publisher/Flux.html"&gt;&lt;code&gt;Flux&lt;/code&gt;&lt;/a&gt;:&lt;/p&gt;
+&lt;pre&gt;&lt;code class="prettyprint java"&gt;reactiveService.getResults()&#xD;
+    .mergeWith(Flux.interval(100))&#xD;
+    .doOnNext(serviceA::someObserver)&#xD;
+    .map(d -&amp;gt; d * 2)&#xD;
+    .take(3)&#xD;
+    .onErrorResumeWith(errorHandler::fallback)&#xD;
+    .doAfterTerminate(serviceM::incrementTerminate)&#xD;
+    .consume(System.out::println);
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;But during our work on Spring Framework 5, it became apparent that there was a clear need to distinguish between streams of 1 or N elements, and that is why Reactor provides the &lt;a href="http://projectreactor.io/core/docs/api/reactor/core/publisher/Mono.html"&gt;&lt;code&gt;Mono&lt;/code&gt;&lt;/a&gt; type. &lt;code&gt;Mono&lt;/code&gt; is the Reactive equivalent of &lt;code&gt;CompletableFuture&lt;/code&gt; type, and allow to provide a consistent API for handling single and multiple elements in a Reactive way.&lt;/p&gt;
+&lt;pre&gt;&lt;code class="prettyprint java"&gt;Mono.any(reactiveServiceA.findRecent(time), reactiveServiceB.findRecent(time)&#xD;
+    .timeout(Duration.ofSeconds(3), errorHandler::fallback)&#xD;
+    .doOnSuccess(r -&amp;gt; reactiveServiceC.incrementSuccess())&#xD;
+    .consume(System.out::println);
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;If you have a deeper look to &lt;a href="http://projectreactor.io/core/docs/api/reactor/core/publisher/Flux.html"&gt;&lt;code&gt;Flux&lt;/code&gt;&lt;/a&gt; and &lt;a href="http://projectreactor.io/core/docs/api/reactor/core/publisher/Mono.html"&gt;&lt;code&gt;Mono&lt;/code&gt;&lt;/a&gt;, you will notice these types implement the &lt;code&gt;Publisher&lt;/code&gt; interface from the Reactive Streams specification.&lt;/p&gt;&lt;h2&gt;&lt;a href="#reactive-streams" class="anchor" name="reactive-streams"&gt;&lt;/a&gt;Reactive Streams&lt;/h2&gt;
+&lt;p&gt;Reactor is built on the &lt;a href="http://www.reactive-streams.org"&gt;Reactive Streams&lt;/a&gt; specification. Reactive Streams is composed of &lt;a href="http://www.reactive-streams.org/reactive-streams-1.0.0-javadoc/"&gt;4 simple Java interfaces&lt;/a&gt; (&lt;code&gt;Publisher&lt;/code&gt;, &lt;code&gt;Subscriber&lt;/code&gt;, &lt;code&gt;Subscription&lt;/code&gt; and &lt;code&gt;Processor&lt;/code&gt;), a &lt;a href="https://github.com/reactive-streams/reactive-streams-jvm/blob/v1.0.0/README.md#specification"&gt;textual specification&lt;/a&gt; and a &lt;a href="http://www.reactive-streams.org/reactive-streams-tck-1.0.0-javadoc/"&gt;TCK&lt;/a&gt;. It is the cornerstone of every modern Reactive library and a must have for interoperability purpose.&lt;/p&gt;
+&lt;p&gt;The core concern of Reactive Streams is handling backpressure. In a nutshell, backpressure is a mechanism that permits a receiver to ask how much data it wants to receive from the emitter. It allows:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;The receiver to start receiving data only when it is ready to process it&lt;/li&gt;
+  &lt;li&gt;To control the inflight amount of data&lt;/li&gt;
+  &lt;li&gt;Efficient handling of slow emitter/fast receiver or fast emitter/slow receiver use cases&lt;/li&gt;
+  &lt;li&gt;To switch from a dynamic push-pull strategy to a push-based only strategy if you request &lt;code&gt;Long.MAX_VALUE&lt;/code&gt; elements&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;At first glance, the &lt;a href="http://www.reactive-streams.org/reactive-streams-1.0.0-javadoc/org/reactivestreams/Publisher.html"&gt;&lt;code&gt;Publisher&lt;/code&gt;&lt;/a&gt; interface seems deceivingly simple to implement; but doing so in complete conformance with the specification turns out to be pretty hard, and users can&amp;rsquo;t do anything with raw &lt;code&gt;Publisher&lt;/code&gt; except subscribing to it! That’s why it’s typically a better idea to rely on a Reactive Streams implementation, such as Reactor, to help you out with this.&lt;/p&gt;
+&lt;p&gt;Note that Java 9 &lt;a href="http://cs.oswego.edu/pipermail/concurrency-interest/2015-January/013641.html"&gt;will include&lt;/a&gt; the Reactive Streams interfaces in the &lt;code&gt;java.util.concurrent.Flow&lt;/code&gt; container class, further showing the relevance of Reactive Streams within the JDK.&lt;/p&gt;
+&lt;p&gt;It is also important to notice that convergence toward Reactive Streams and &lt;a href="https://github.com/reactor/reactor-core/tree/master/src/main/java/reactor/core/converter"&gt;Reactor conversion capabilities&lt;/a&gt; allow easy and efficient conversion from one Reactive type to another at runtime.&lt;/p&gt;&lt;h2&gt;&lt;a href="#conclusion" class="anchor" name="conclusion"&gt;&lt;/a&gt;Conclusion&lt;/h2&gt;
+&lt;p&gt;I hope this blog post will help you to have a better understanding of Reactive types.&lt;/p&gt;
+&lt;p&gt;We are working on Reactive support with types like Reactor &lt;code&gt;Mono&lt;/code&gt; and &lt;code&gt;Flux&lt;/code&gt; in various Spring projects like Spring Framework, Spring Boot, Spring Data, Spring Security and Spring Cloud.&lt;/p&gt;
+&lt;p&gt;But your upcoming Reactive application will also use directly these types too, for example at &lt;code&gt;@Repository&lt;/code&gt;, &lt;code&gt;@Service&lt;/code&gt; or &lt;code&gt;@Controller&lt;/code&gt; methods level, because building a Reactive application means using Reactive semantics where you have to deal with latency or streams (we will also provide some guidance to integrate blocking API).&lt;/p&gt;
+&lt;p&gt;We will post additional Reactive blog posts in the upcoming months. Feel free to familiarize yourself with &lt;a href="https://github.com/reactor/lite-rx-api-hands-on/"&gt;this test-driven Lite Rx API Hands-On&lt;/a&gt; that will teach you how to use &lt;code&gt;Flux&lt;/code&gt; and &lt;code&gt;Mono&lt;/code&gt;, and as usual your feedbacks are welcome!&lt;/p&gt;
+&lt;p&gt;If you happen to be in Barcelona mid May (never a bad time to be in Barcelona anyway!), don’t miss the chance to join the &lt;a href="http://www.springio.net/"&gt;Spring I/O conference&lt;/a&gt;. Also, the registration for &lt;a href="http://springoneplatform.io/"&gt;SpringOne Platform&lt;/a&gt; (early August, Las Vegas) has opened recently, in case you want to benefit from early bird ticket pricing.&lt;/p&gt;</content>
+  </entry>
+  <entry>
+    <title>Spring Cloud Brixton.RC2 now available</title>
+    <link rel="alternate" href="https://spring.io/blog/2016/04/19/spring-cloud-brixton-rc2-now-available" />
+    <category term="engineering" label="Engineering" />
+    <author>
+      <name>Dave Syer</name>
+    </author>
+    <id>tag:spring.io,2016-04-19:2473</id>
+    <updated>2016-04-19T11:01:00Z</updated>
+    <content type="html">&lt;p&gt;The latest milestone version of Spring Cloud is &amp;ldquo;Brixton.RC2&amp;rdquo; and it is available now from the usual repositories (details in the &lt;a href="http://projects.spring.io/spring-cloud/"&gt;home page&lt;/a&gt;). This is a bugfix release building on the RC1, and there are no notable new features. If all goes well we&amp;rsquo;d like to get to a RELEASE in a week or two.&lt;/p&gt;</content>
+  </entry>
+  <entry>
+    <title>This Week in Spring - April 19th, 2016</title>
+    <link rel="alternate" href="https://spring.io/blog/2016/04/19/this-week-in-spring-april-19th-2016" />
+    <category term="engineering" label="Engineering" />
+    <author>
+      <name>Josh Long</name>
+    </author>
+    <id>tag:spring.io,2016-04-19:2472</id>
+    <updated>2016-04-19T06:49:48Z</updated>
+    <content type="html">&lt;p&gt;Welcome to another installment of &lt;em&gt;This Week in Spring&lt;/em&gt;! This week I&amp;rsquo;m in Stuttgart and Mainz, Germany and Paris, France, speaking to customers and at the &lt;a href="http://jax.de"&gt;JAX conference&lt;/a&gt;, then it&amp;rsquo;s off to Paris, France, to &lt;a href="http://www.devoxx.fr/"&gt;speak at the Devoxx France edition&lt;/a&gt;. If you&amp;rsquo;re around in any of these places don&amp;rsquo;t hesitate to reach out I&amp;rsquo;d love to say hello.&lt;/p&gt;
+&lt;p&gt;Also, tonight, I&amp;rsquo;ll be joining my friends from industry (Daniel Bryant, Markus Eisele, and Simon Maple) for the &lt;a href="http://twitter.com/zeroturnaround"&gt;ZeroTurnaround&lt;/a&gt; webinar, &lt;a href="http://zeroturnaround.com/webinar"&gt;&lt;em&gt;Microservices for the Enterprise&lt;/em&gt;&lt;/a&gt;. There are already more than 3,000 people registered and I hope to see you there, as well!&lt;/p&gt;
+&lt;p&gt;As usual, we&amp;rsquo;ve got a lot to look at today, so let&amp;rsquo;s get started!&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;the BIG news this week: &lt;a href="https://spring.io/blog/2016/04/13/spring-boot-1-4-0-m2-available-now"&gt;&lt;strong&gt;Spring Boot 1.4.0.M2 is now available&lt;/strong&gt;&lt;/a&gt;! This release is &lt;em&gt;packed&lt;/em&gt; with new features (some of which we talk about in other blogs this week), so make sure to get the bits, kick the tires and feedback!&lt;/li&gt;
+  &lt;li&gt;the biggest event of the year is, without a doubt, &lt;a href="https://spring.io/blog/2016/04/15/springone-platform"&gt;SpringOne Platform&lt;/a&gt;, and we want to see you there!&lt;/li&gt;
+  &lt;li&gt;Spring Integration lead Artem Bilan has just announced Spring Integration AWS 1.0.0.M1, &lt;a href="https://spring.io/blog/2016/04/14/spring-integration-aws-1-0-0-m1-is-now-available"&gt;supporting Amazon Web Services integrations&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Our pal Simon Baslé, &lt;a href="http://twitter.com/couchbase"&gt;from Couchbase&lt;/a&gt; - makers of the epic document database, cross-posted a &lt;em&gt;very&lt;/em&gt; &lt;a href="https://spring.io/blog/2016/04/14/couchbase-as-a-first-class-citizen-of-spring-boot-1-4"&gt;cool look at using Spring Data Couchbase, a first-class citizen in Spring Boot 1.4&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;the good &lt;a href="https://spring.io/blog/2016/04/13/overriding-dependency-versions-with-spring-boot"&gt;Dr. David Syer looks at how to override platform-and-framework specified versions&lt;/a&gt; in Spring Boot and Spring Cloud in this really fascinating article that plumbs the depths of dependency management so that you don&amp;rsquo;t have to!&lt;/li&gt;
+  &lt;li&gt;Spring Boot lead and testing enthusiast Phil Webb &lt;a href="https://spring.io/blog/2016/04/15/testing-improvements-in-spring-boot-1-4"&gt;debuts some of the upcoming Spring Boot 1.4&amp;rsquo;s &lt;em&gt;numerous&lt;/em&gt; new features supporting ease-of-testing&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;our very own Jared Gordon put together a nice case-study &lt;a href="https://blog.pivotal.io/pivotal-cloud-foundry/features/case-study-refactoring-a-monolith-into-a-cloud-native-app-part-4"&gt;on refactoring a monolith to a microservices-based system using Spring Boot and Spring Cloud&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Alexander Lukyanchikov put together an interesting &lt;a href="https://dzone.com/articles/microservice-architecture-with-spring-cloud-and-do"&gt;post on building a microservices-based system using Spring Cloud and Docker&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Zoltan Altfatter is back at it again, &lt;a href="http://zoltanaltfatter.com/2016/04/16/trying-out-spring-boot-1.4.0-new-features-and-enhancements/"&gt;this time with a look at the features in Spring Boot 1.4&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;our other pal Michael Simons is back at it again this week, &lt;em&gt;also&lt;/em&gt; &lt;a href="http://info.michael-simons.eu/2016/04/17/8-new-features-youll-get-with-spring-boot-1-4/"&gt;with a look at the features in Spring Boot 1.4&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</content>
+  </entry>
   <entry>
     <title>Testing improvements in Spring Boot 1.4</title>
     <link rel="alternate" href="https://spring.io/blog/2016/04/15/testing-improvements-in-spring-boot-1-4" />
@@ -931,55 +1016,5 @@ public MessageHandler kafkaProducerHandler(&#xD;
 &lt;/ul&gt;
 &lt;p&gt;We are working towards an RC2 with some remaining fine-tuning and performance improvements in the meantime, preparing for 4.3&amp;rsquo;s general availability on June 1st!&lt;/p&gt;
 &lt;p&gt;Cheers,&lt;br/&gt;Juergen&lt;/p&gt;</content>
-  </entry>
-  <entry>
-    <title>This Week in Spring  - April 5th, 2016</title>
-    <link rel="alternate" href="https://spring.io/blog/2016/04/05/this-week-in-spring-april-5th-2016" />
-    <category term="news" label="News and Events" />
-    <author>
-      <name>Josh Long</name>
-    </author>
-    <id>tag:spring.io,2016-04-05:2453</id>
-    <updated>2016-04-05T14:40:00Z</updated>
-    <content type="html">&lt;p&gt;Welcome to another installment of &lt;em&gt;This Week in Spring&lt;/em&gt;! As usual, we&amp;rsquo;ve got a &lt;em&gt;lot&lt;/em&gt; to cover so let&amp;rsquo;s get to it!&lt;/p&gt;
-&lt;ul&gt;
-  &lt;li&gt;Spring Security lead &lt;a href="https://spring.io/blog/2016/03/31/spring-ldap-2-1-0-rc1-released"&gt;Rob Winch has just announced Spring LDAP 2.1.0.RC1 has been released!&lt;/a&gt; Get the bits and try it out.&lt;/li&gt;
-  &lt;li&gt;Oracle&amp;rsquo;s amazing &lt;a href="http://twitter.com/GeertjanW"&gt;Geertjan Wielenga&lt;/a&gt; put together an &lt;em&gt;awesome&lt;/em&gt;, 100% live demo &lt;a href="https://spring.io/blog/2016/03/30/webinar-replay-up-and-running-with-spring-boot-in-netbeans-ide"&gt;looking at how to use Spring Boot with NetBeans&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;I love Spring Cloud Data Flow! Whether you want a way to describe and compose complex processing streams from simple actor-like components, want to orchestrate stream processing solutions, manage tasks like data at-scale data ingest or otherwise, Spring Cloud Data Flow is probably what you&amp;rsquo;re looking for. Check out this quick look &lt;a href="https://spring.io/blog/2016/04/05/1-stream-2-applications-and-3-dependencies-for-spring-cloud-data-flow"&gt;at standing up a Spring Cloud Data Flow server, shell and a custom module that I put together&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;Spring Cloud team member Marcin Grzejszczak, on the cusp of a recent Spring Cloud release, takes a look at what&amp;rsquo;s changed and &lt;a href="http://toomuchcoding.com/blog/2016/03/25/spring-cloud-sleuth-rc1-deployed/"&gt;what&amp;rsquo;s awesome in Spring Cloud Sleuth&lt;/a&gt;, the distributed tracing abstraction in Spring Cloud&lt;/li&gt;
-  &lt;li&gt;Don&amp;rsquo;t miss this epic &lt;a href="https://spring.io/blog/2016/03/09/webinar-spring-boot-and-ratpack-web-framework"&gt;look at reactive programming with Spring Boot and Ratpack&lt;/a&gt; by the amazing &lt;a href="http://twitter.com/Lspacewalker"&gt;Danny Hyun&lt;/a&gt;.&lt;/li&gt;
-  &lt;li&gt;Rossen Stoyanchev, and Stephane Maldini&amp;rsquo;s follow on talk to their &lt;a href="http://spring.io/blog/2016/02/02/springone2gx-2015-replay-introduction-to-reactive-programming"&gt;Introduction to reactive programming&lt;/a&gt; from SpringOne2GX 2015 is now live on the Spring Developer channel. Check out &lt;a href="http://spring.io/blog/2016/04/05/springone2gx-2015-replay-reactive-web-applications"&gt;Reactive Web Applications&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;Michael Wilmes from Lufthansa, and Laurent Dougin from Couchbase double down on NoSQL and Spring in their SpringOne2GX 2015 talk, &lt;a href="http://spring.io/blog/2016/04/05/springone2gx-2015-replay-spring-data-daily-double-couchbase-and-neo4j"&gt;Spring Data Daily Double - Couchbase and Neo4J&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;Michael Scharhag put together a really cool &lt;a href="http://www.mscharhag.com/spring/spring-retry"&gt;look at Spring Retry, one of my favorite projects&lt;/a&gt;. Spring Retry is &lt;em&gt;very&lt;/em&gt; popular, according to our download numbers!&lt;/li&gt;
-  &lt;li&gt;This post, by the Pivotal Data Science team, looks at how they integrated disparate, &lt;a href="https://blog.pivotal.io/data-science-pivotal/products/scoring-as-a-service-to-operationalize-algorithms-for-real-time"&gt;polyglot services with RabbitMQ and Spring XD, among other things, to operationalize a scoring service&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;our pals at Codecentric are at it again, this time with a great &lt;a href="https://blog.codecentric.de/en/2016/04/event-driven-microservices-spring-cloud-stream/"&gt;surface-look at Spring Cloud Stream&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;nice new entry in an ongoing series, this one &lt;a href="https://dzone.com/articles/the-netflix-stack-using-spring-boot-part-3-feign"&gt;on using Spring Cloud&amp;rsquo;s Netflix Feign support&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;the &lt;a href="https://github.com/mybatis/spring-boot-starter"&gt;MyBatis Spring Boot starter continues to improve&lt;/a&gt; by leaps and bounds. I am super happy to see this (and to have contributed some to it) because MyBatis is used a &lt;em&gt;lot&lt;/em&gt; in China at large (China scale!) services who otherwise abhor ORM technologies like Hibernate.&lt;/li&gt;
-  &lt;li&gt;There are lot&amp;rsquo;s of exciting new choices in the world of [the Spring Initializr] this week! choose Spring Boot &lt;code&gt;1.3.4 (SNAPSHOT)&lt;/code&gt; and you&amp;rsquo;ll see checkboxes for the &lt;code&gt;Zipkin UI&lt;/code&gt; (combine it with the &lt;code&gt;Zipkin Stream Server&lt;/code&gt; to get an instant span collection and visualization service), &lt;a href="https://twitter.com/davsclaus/status/715924136426610688"&gt;&lt;code&gt;Apache Camel&lt;/code&gt;&lt;/a&gt;, &lt;code&gt;Spring Cloud Data Flow Shell&lt;/code&gt; (a client for the &lt;code&gt;Spring Cloud Data Flow Local Server&lt;/code&gt;).&lt;/li&gt;
-&lt;/ul&gt;</content>
-  </entry>
-  <entry>
-    <title>SpringOne2GX 2015 replay: Reactive Web Applications</title>
-    <link rel="alternate" href="https://spring.io/blog/2016/04/05/springone2gx-2015-replay-reactive-web-applications" />
-    <category term="news" label="News and Events" />
-    <author>
-      <name>Pieter Humphrey</name>
-    </author>
-    <id>tag:spring.io,2016-04-06:2454</id>
-    <updated>2016-04-05T14:39:00Z</updated>
-    <content type="html">&lt;p&gt;Recorded at SpringOne2GX 2015.&lt;br/&gt;Speaker: Stephane Maldini, Rossen Stoyanchev&lt;br/&gt;Web / Javascript track&lt;br/&gt;Slides: &lt;a href="http://www.slideshare.net/SpringCentral/reactive-web-applications-53170985"&gt;http://www.slideshare.net/SpringCentral/reactive-web-applications-53170985&lt;/a&gt;&lt;br/&gt;In our previous talk &amp;ldquo;Intro to Reactive Programming&amp;rdquo; we defined reactive programming and provided details around key initiatives such as Reactive Streams and ReactiveX. In this talk we&amp;rsquo;ll focus on where we are today with building reactive web applications. We&amp;rsquo;ll take a look at the choice of runtimes, how Reactive Streams may be applied to network I/O, and what the programming model may look like. While this is a forward looking talk, we&amp;rsquo;ll spend plenty of time demoing code built with with back-pressure ready libraries available today.&lt;/p&gt;
-&lt;iframe width="560" height="315" src="https://www.youtube.com/embed/f4Teko8vauk" frameborder="0" allowfullscreen&gt;&lt;/iframe&gt;</content>
-  </entry>
-  <entry>
-    <title>SpringOne2GX 2015 replay:  Spring Data Daily Double - Couchbase and Neo4J</title>
-    <link rel="alternate" href="https://spring.io/blog/2016/04/05/springone2gx-2015-replay-spring-data-daily-double-couchbase-and-neo4j" />
-    <category term="news" label="News and Events" />
-    <author>
-      <name>Pieter Humphrey</name>
-    </author>
-    <id>tag:spring.io,2016-04-06:2455</id>
-    <updated>2016-04-05T14:38:00Z</updated>
-    <content type="html">&lt;p&gt;Recorded at SpringOne2GX 2015.&lt;br/&gt;Speakers: Michael Wilmes, Lufthansa and Laurent Doguin, Couchbase&lt;br/&gt;Data / Integration Track&lt;br/&gt;&lt;a href="http://www.slideshare.net/SpringCentral/inflight-asset-management-with-spring-data-and-neo4j"&gt;http://www.slideshare.net/SpringCentral/inflight-asset-management-with-spring-data-and-neo4j&lt;/a&gt;&lt;br/&gt;We invite you to join these two speakers from the Spring Data community, each speaking about their respective projects for 45 minutes.&lt;br/&gt;Michael Wilmes from Lufthansa Systems will speak about Graph-based Asset Management with the Spring Framework. He is part of a flagship project that brings next-generation Inflight-Entertainment systems onto passenger aircrafts, and tackles the operational aspects of managing IT systems in flight, on ground and anywhere in between. Within his talk he will give insight on how Lufthansa Systems leverages the Spring Stack for solving an asset management problem scope with Spring Data and Neo4j.&lt;br/&gt;Next, Laurent Doguin from Couchbase will tell us how to &amp;ldquo;Manage Time-base data with Spring Data Couchbase&amp;rdquo;. A common thing to do in the big data world is store time-based data. It can be logs, user events, social media metrics, market data indicators or even more common now sensor data. You can do that very easily with Spring Data Couchbase. I this talk I will tell you what you need to know before starting to store time-based data. I&amp;rsquo;ll talk about use cases, data modeling, how Couchbase is a perfect fit for this kind of job and code a little demo that reflects all of this.&lt;/p&gt;
-&lt;iframe width="560" height="315" src="https://www.youtube.com/embed/SigEreDcHr4" frameborder="0" allowfullscreen&gt;&lt;/iframe&gt;</content>
   </entry>
 </feed>

@@ -1,0 +1,151 @@
+/* JamPot.java
+ *
+ * AUTHOR
+ * Will Weaver
+ * Computer Engineering Major
+ * Mechanical Engineering Senior Capstone Design Team 3
+ * Michigan Technological University
+ *
+ * SPONSOR
+ * Mitch Baldwin
+ * Stryker Instruments
+ *
+ * DESCRIPTION
+ * Provides a GUI for interacting with the JamJel device by generating and
+ * modifying motion patterns.
+ */
+
+package application;
+
+import java.util.ArrayList;
+
+import javafx.application.Application;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.control.Slider;
+import javafx.scene.control.TextField;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.stage.Stage;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.*;
+
+public class JamPot extends Application {
+
+	private Stage theStage;
+	private String PatternName = "";
+	private TextField KeyboardTextbox;
+	private ArrayList<MotionPattern> patterns;
+	
+	public static void main(String[] args) {
+		launch(args);
+	}
+
+	public void start(Stage primaryStage) throws Exception {
+		
+		// TODO Read patterns from file into arraylist
+		patterns.add(MotionPattern.LINE_A);
+		patterns.add(MotionPattern.LINE_B);
+		patterns.add(MotionPattern.LINE_C);
+		patterns.add(MotionPattern.CIRCLE);
+		
+		theStage = primaryStage; 
+		
+		goToHomePane(patterns.get(0));
+		primaryStage.setTitle("JamPot");
+		primaryStage.show();
+
+	}
+	
+	public ArrayList<MotionPattern> getPatterns() {
+		return patterns;
+	}
+
+	public void addPattern(MotionPattern pattern) {
+		patterns.add(pattern);
+	}
+	
+	public void removePattern(MotionPattern pattern) {
+		patterns.remove(pattern);
+	}
+
+	public Pane getKeyboardPane() {
+		return getKeyboardPane(new String[] {	"q", "w", "e", "r", "t", "y", "u", "i", "o", "p",
+												"a", "s", "d", "f", "g", "h", "j", "k", "l",
+												"Caps", "z", "x", "c", "v", "b", "n", "m", "Back",
+												"?123", "Space", "."});
+	}
+	
+	public Pane getKeyboardCapsPane() {
+		return getKeyboardPane(new String[] {	"Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P",
+												"A", "S", "D", "F", "G", "H", "J", "K", "L",
+												"Lower", "Z", "X", "C", "V", "B", "N", "M", "Back",
+												"?123", "Space", "."});
+	}
+	
+	public Pane getKeyboardNumberPane() {
+		return getKeyboardPane(new String[] {	"0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
+												"-", "/", ":", ";", "(", ")", "$", "&", "@",
+												"Caps", "\"", "\'", "?", "!", "%", "#", "*", "Back",
+												"abcd", "Space", ","});
+	}
+	
+	public void goToHomePane(MotionPattern curPattern) {
+		Scene scene = new Scene (new HomePane(this, curPattern), 800, 600);
+		theStage.setScene(scene);
+	}
+	
+	public void goToKeyboardPane(MotionPattern curPattern) {
+		Scene scene = new Scene (new KeyboardPane(this, curPattern), 800, 600);
+		theStage.setScene(scene);
+	}
+	
+	public void goToPatternSelectionPane(MotionPattern curPattern) {
+		Scene scene = new Scene (new PatternSelectionPane(this, curPattern), 800, 600);
+		theStage.setScene(scene);
+	}
+	
+	public void goToEditPane(MotionPattern curPattern) {
+		Scene scene = new Scene (new EditPane(this, curPattern), 800, 600);
+		theStage.setScene(scene);
+	}
+	
+	public void accept()
+	{
+		System.out.println("Accept");
+		Scene scene= new Scene(getHomePane(), 800, 600);
+		theStage.setScene(scene);
+	}
+		
+	public void caps()
+	{
+		Scene scene= new Scene(getKeyboardCapsPane(), 800, 600);
+		theStage.setScene(scene);
+	}
+		
+	public void lower()
+	{
+		Scene scene= new Scene(getKeyboardPane(), 800, 600);	
+		theStage.setScene(scene);	
+	}
+		
+	public void backspace()
+	{
+		if(PatternName.length() > 0)
+			PatternName = PatternName.substring(0, PatternName.length() - 1);
+		KeyboardTextbox.setText(PatternName);
+	}
+		
+	public void numbers()
+	{
+		Scene scene= new Scene(getKeyboardNumberPane(), 800, 600);
+		theStage.setScene(scene);
+	}
+}
+

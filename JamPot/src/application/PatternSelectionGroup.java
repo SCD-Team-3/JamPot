@@ -3,10 +3,6 @@ package application;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.CornerRadii;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
@@ -23,28 +19,33 @@ public class PatternSelectionGroup extends Group{
 	private static final double ARC_RADIUS = 50;
 	private static final double FONT_SIZE = 24;
 	private static final double PADDING = 30;
+	private MotionPattern pattern;
+	private PatternSelectionPane manager;
 	private Rectangle outline;
 	private Rectangle fill;
 	private Label title;
+	private PatternSelectionButton button;
 	
-	public PatternSelectionGroup(String name, double x, double y) 
+	public PatternSelectionGroup(MotionPattern pattern, double x, double y, PatternSelectionPane manager) 
 	{
+		this.manager = manager;
+		
 		// Create and configure outline
 		outline = new Rectangle(x, y, WIDTH, HEIGHT);
 		outline.setFill(Color.rgb(OUTLINE_GRAY, OUTLINE_GRAY, OUTLINE_GRAY));
 		outline.setArcHeight(ARC_RADIUS);
 		outline.setArcWidth(ARC_RADIUS);
-		this.getChildren().add(outline);
+		getChildren().add(outline);
 		
 		// Create and configure fill
 		fill = new Rectangle(x + OUTLINE_WIDTH, y + OUTLINE_WIDTH, WIDTH - OUTLINE_WIDTH * 2, HEIGHT - OUTLINE_WIDTH * 2);
 		fill.setFill(Color.rgb(BACKGROUND_GRAY, BACKGROUND_GRAY, BACKGROUND_GRAY));
 		fill.setArcHeight(ARC_RADIUS);
 		fill.setArcWidth(ARC_RADIUS);
-		this.getChildren().add(fill);
+		getChildren().add(fill);
 		
 		// Create and configure label
-		title = new Label(name);
+		title = new Label(pattern.getName());
 		title.setFont(Font.font("Calibri", FontWeight.NORMAL, FONT_SIZE));
 		title.setAlignment(Pos.TOP_CENTER);
 		title.setTextAlignment(TextAlignment.CENTER);
@@ -52,7 +53,23 @@ public class PatternSelectionGroup extends Group{
 		title.setLayoutX(x);
 		title.setLayoutY(y + HEIGHT - PADDING);
 		title.setTextFill(Color.WHITE);
-		this.getChildren().add(title);
+		getChildren().add(title);
 		
+		
+		// Create and configure button
+		button = new PatternSelectionButton(x, y, e->select());
+		getChildren().add(button);
+	}
+	
+	public void select() {
+		manager.selectPattern(pattern);
+	}
+	
+	public MotionPattern getPattern() {
+		return pattern;
+	}
+	
+	public void setPattern(MotionPattern newPattern) {
+		pattern = newPattern;
 	}
 }

@@ -1,6 +1,5 @@
 package application;
 
-import javafx.beans.value.ChangeListener;
 import javafx.geometry.Orientation;
 import javafx.scene.control.Slider;
 

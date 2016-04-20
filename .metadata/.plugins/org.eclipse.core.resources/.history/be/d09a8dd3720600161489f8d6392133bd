@@ -1,0 +1,71 @@
+package application;
+
+import javafx.scene.canvas.Canvas;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
+
+public class HomePane extends Pane {
+	private MotionPattern pattern;
+	
+	// Images
+	private Image preset =  new Image("file:preset.png", 35, 35, true, true);
+	
+	// On-screen elements
+	private NavButton patternSelect = new NavButton("Select Pattern", 10, 500, e->selectPattern());
+
+	public HomePane(MotionPattern pattern) {
+		this.pattern = pattern;
+		
+		this.setBackground(new Background(new BackgroundFill(Color.rgb(26,26,26), null, null)));
+		
+		// Configure "Select Pattern" button
+		patternSelect.setGraphic(new ImageView(preset));
+		this.getChildren().add(patternSelect);
+		
+		// Create & configure "Edit" button
+		NavButton edit = new NavButton("Edit", 520, 130, e->edit());
+		Image pencil = new Image("file:edit.png", 35, 35, true, true);
+		edit.setGraphic(new ImageView(pencil));
+		this.getChildren().add(edit);
+		
+		// Create & configure "Save" button
+		NavButton save = new NavButton("", 660, 130, e->save());
+		Image disk = new Image("file:save.png", 35, 35, true, true);
+		save.setGraphic(new ImageView(disk));
+		this.getChildren().add(save);
+		
+		// Create and configure Amplitude grouping
+		QuickAccessGroup amplitudeGrp = new QuickAccessGroup(pattern.getAmplitude(), 535, 10);
+		this.getChildren().add(amplitudeGrp);
+		
+		// Create and configure Frequency grouping
+		QuickAccessGroup frequencyGrp = new QuickAccessGroup(pattern.getFrequency(), 535, 275);
+		this.getChildren().add(frequencyGrp);
+		
+		// Display motion pattern image
+		Canvas image = pattern.getImage(515, 515, Color.rgb(26, 26, 26), Color.WHITE, 2);
+		image.setTranslateX(10);
+		image.setTranslateY(10);
+		this.getChildren().add(image);
+	}
+	
+	public void selectPattern() {
+		
+	}
+	
+	public void edit() {
+		
+	}
+	
+	public void save() {
+		
+	}
+	
+	public void update(MotionPattern pattern) {
+		
+	}
+}

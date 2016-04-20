@@ -1,0 +1,150 @@
+package application;
+
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.scene.Scene;
+import javafx.scene.control.Slider;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+
+public class PatternSelectionPane extends Pane implements MotionPatternDisplayer {
+	
+	// Non-visible properties
+	private JamPot main;
+	private MotionPattern selectedPattern = null;
+	private MotionPattern oldPattern;
+	
+	// On-screen elements
+	private Slider slider;
+	private Rectangle greenBorder;
+	private NavButton accept;
+	private NavButton back;
+	private NavButton delete;
+	private PatternSelectionGroup[] patternGroups;
+	
+	public PatternSelectionPane(JamPot newMain, MotionPattern prev) {
+		main = newMain;
+		oldPattern = prev;
+		
+		setBackground(new Background(new BackgroundFill(Color.rgb(26,26,26), null, null)));
+		
+		// Create & configure "Accept" button
+		accept = new NavButton("", 72.5, 130, e->acceptPatternSelection());
+		Image ok = new Image("file:accept.png", 35, 35, true, true);
+		accept.setGraphic(new ImageView(ok));
+		getChildren().add(accept);
+		
+		// Create & configure "Delete" button
+		delete = new NavButton("", 275, 130, e->delete());
+		Image x = new Image("file:delete.png", 35, 35, true, true);
+		delete.setGraphic(new ImageView(x));
+		getChildren().add(delete);		
+		
+		// Create & configure "Back" button
+		back = new NavButton("", 477.5, 130, e->back());
+		Image arrow = new Image("file:back.png", 35, 35, true, true);
+		back.setGraphic(new ImageView(arrow));
+		getChildren().add(back);	
+		
+		//Create and configure slider
+		slider = new SelectionSlider(-3,-1,-1); 
+		slider.valueProperty().addListener(new ChangeListener<Number>() {
+		    @Override
+		    public void changed(ObservableValue<? extends Number> observable,
+		            Number oldValue, Number newValue) {
+
+		    	change(""); 	
+		    }
+		});
+		getChildren().add(slider);
+		
+		//Create and configure slider buttons		
+		CircleButton increment = new CircleButton("+", 712.5, 25, e->change("+"));
+		Image up = new Image("file:up.png", 25, 35, true, true);
+		increment.setGraphic(new ImageView(up));
+		getChildren().add(increment);
+		CircleButton decrement = new CircleButton("-", 712.5, 470, e->change("-"));
+		Image down = new Image("file:down.png", 25, 35, true, true);
+		decrement.setGraphic(new ImageView(down));
+		getChildren().add(decrement);
+		
+		//Create saved group
+		int CurrentSliderValue = (int) slider.getValue();
+		PatternSelectionGroup UpperLeft = new PatternSelectionGroup(storage.getSavePatternName(CurrentSliderValue*(-1)*4-3), 10, 10);
+		getChildren().add(UpperLeft); 
+		PatternSelectionGroup UpperRight = new PatternSelectionGroup(storage.getSavePatternName(CurrentSliderValue*(-1)*4-2), 350, 10);
+		getChildren().add(UpperRight);
+		PatternSelectionGroup LowerLeft = new PatternSelectionGroup(storage.getSavePatternName(CurrentSliderValue*(-1)*4-1), 10, 275);
+		getChildren().add(LowerLeft);
+		PatternSelectionGroup LowerRight = new PatternSelectionGroup(storage.getSavePatternName(CurrentSliderValue*(-1)*4), 350, 275);
+		getChildren().add(LowerRight);
+		
+		// Create and configure selected border
+		greenBorder = new Rectangle();
+		greenBorder.setStyle("-fx-border-color: green;");
+		greenBorder.setArcHeight(50);
+		greenBorder.setArcWidth(50);
+		greenBorder.setWidth(330);
+		greenBorder.setHeight(255);
+		greenBorder.setFill(Color.TRANSPARENT);
+		greenBorder.setStroke(Color.GREEN);
+		greenBorder.setStrokeWidth(3);
+	}
+	
+	public void selectPattern(double x, double y)
+	{
+		getChildren().remove(greenBorder);
+		// Grab selected pattern
+		
+		greenBorder.setX(x);
+		greenBorder.setY(y);
+		
+		getChildren().add(greenBorder);
+	}
+	
+	public void acceptPatternSelection()
+	{
+		if (selectedPattern != null)
+			main.goToHomePane(selectedPattern);
+	}
+	
+	public void change(String type)
+	{
+		if (type.equals("+")) {
+			if (slider.getValue() < slider.getMax())
+				slider.setValue(slider.getValue()+1);
+		} else if (type.equals("-")) {
+			if (slider.getValue() > slider.getMin())
+				slider.setValue(slider.getValue()-1);
+		}
+		
+	   	Pane pane = getPatternSelectionPane();
+	   	pane.getChildren().remove(GreenBorder);
+		Scene scene= new Scene(pane, 800, 600);
+		theStage.setScene(scene);
+	
+	}
+	
+	public void delete()
+	{
+		main.removePattern(selectedPattern);
+		// Redraw pane
+	}
+		
+	public void back()
+	{
+		main.goToHomePane(oldPattern);
+	}
+
+	@Override
+	public void update(MotionPattern callingPattern) {
+		// TODO Auto-generated method stub
+
+	}
+
+}

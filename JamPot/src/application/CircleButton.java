@@ -14,12 +14,9 @@ public class CircleButton extends Button{
 	private Stop[] stops;
 	private LinearGradient unpressedGradient;
 	private LinearGradient pressedGradient;
-	private String type;
-	private Attribute attr;
 	
 
-	public CircleButton(String type, double x, double y, EventHandler<ActionEvent> value) {
-		this.type = type;
+	public CircleButton(double x, double y, EventHandler<ActionEvent> value) {
 		
 		//Set layout
 		this.setLayoutX(x);

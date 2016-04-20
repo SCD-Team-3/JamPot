@@ -1,0 +1,36 @@
+package application;
+
+import javafx.scene.canvas.Canvas;
+import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
+
+public class EditPane extends Pane implements MotionPatternDisplayer {
+	
+	// Non-visible properties
+	private JamPot main;
+	private MotionPattern pattern;
+	
+	// On-Screen elements
+	private NavButton patternSelect;
+	private NavButton edit;
+	private NavButton save;
+	private QuickAccessGroup rotationGrp;
+	private QuickAccessGroup distortionGrp;
+	private Canvas patternImage;
+	
+	public EditPane(JamPot newMain, MotionPattern newPattern) {
+		main = newMain;
+		pattern = newPattern;
+	}
+	
+	public void update(MotionPattern callingPattern) {
+		if (callingPattern != pattern)
+			throw new IllegalArgumentException("Calling pattern does not match current pattern");
+		
+		getChildren().remove(patternImage);
+		patternImage = pattern.getImage(515, 515, Color.rgb(26, 26, 26), Color.WHITE, 2);
+		patternImage.setTranslateX(10);
+		patternImage.setTranslateY(10);
+		getChildren().add(patternImage);
+	}
+}

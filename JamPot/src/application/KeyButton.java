@@ -38,7 +38,6 @@ public class KeyButton extends Button {
 		this.setBackground(new Background(new BackgroundFill(unpressedGradient, null, null)));
 		this.setBorder(new Border(new BorderStroke(Color.WHITE, BorderStrokeStyle.SOLID, new CornerRadii(5), new BorderWidths(1))));
 	}
-	 
 
 	public void setClickStyle() {
 		this.setBackground(new Background(new BackgroundFill(pressedGradient, null, null)));

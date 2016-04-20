@@ -1,0 +1,17 @@
+package application;
+
+import javafx.scene.layout.Pane;
+
+public class EditPane extends Pane implements MotionPatternDisplayer {
+	private JamPot main;
+	private MotionPattern pattern;
+	
+	public EditPane(JamPot newMain, MotionPattern newPattern) {
+		main = newMain;
+		pattern = newPattern;
+	}
+	
+	public void update(MotionPattern callingPattern) {
+		
+	}
+}

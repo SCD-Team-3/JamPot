@@ -19,13 +19,14 @@ package application;
 
 public class Attribute {
 	private String name;
-	private int value;
+	private double value;
 	private String unit;
-	private QuickAccessGroup display;
-	private int min;
-	private int max;
+	private QuickAccessGroup displayer;
+	private MotionPattern pattern;
+	private double min;
+	private double max;
 
-	public Attribute(String name, String unit, int def, int min, int max) {
+	public Attribute(String name, String unit, double def, double min, double max) {
 		this.name = name;
 		this.unit = unit;
 		this.value = def;
@@ -34,10 +35,10 @@ public class Attribute {
 	}
 	
 	public void setDisplayer(QuickAccessGroup display) {
-		this.display = display;
+		this.displayer = display;
 	}
 	
-	public int change(String type) {
+	public double change(String type) {
 		if (type.equals("+")) {
 			if (value < max)
 				value++;
@@ -46,16 +47,21 @@ public class Attribute {
 				value--;
 		}
 		
-		display.updateValue();
+		displayer.updateValue();
+		pattern.update();
 		
 		return value;
+	}
+	
+	public void setValue(double newVal) {
+		this.value = newVal;
 	}
 	
 	public String getName() {
 		return name;
 	}
 	
-	public int getValue() {
+	public double getValue() {
 		return value;
 	}
 	
