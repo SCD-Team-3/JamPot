@@ -48,7 +48,7 @@ public class MotionPattern {
 																 scaleArray(getSineWaveShifted(0), 1),
 																 scaleArray(getSineWaveShifted(180), 0.5), 
 																 scaleArray(getSineWaveShifted(180), 0.5),
-																 (short) 100, (short) 65535);
+																 (short) 100, (short) 100);
 	
 	// A(t) = 0.5sin(t-180)
 	// B(t) = sin(t)
@@ -57,7 +57,7 @@ public class MotionPattern {
 			 													 scaleArray(getSineWaveShifted(180), 0.5),
 																 scaleArray(getSineWaveShifted(0), 1),
 																 scaleArray(getSineWaveShifted(180), 0.5),
-																 (short) 100, (short) 65535);
+																 (short) 100, (short) 100);
 
 	// A(t) = 0.5sin(t-180)
 	// B(t) = 0.5sin(t-180)
@@ -66,7 +66,7 @@ public class MotionPattern {
 			 													 scaleArray(getSineWaveShifted(180), 0.5),
 																 scaleArray(getSineWaveShifted(180), 0.5),
 																 scaleArray(getSineWaveShifted(0), 1),
-																 (short) 100, (short) 65535);
+																 (short) 100, (short) 100);
 	
 	// A(t) = sin(t)
 	// B(t) = sin(t+120)
@@ -75,7 +75,7 @@ public class MotionPattern {
 			 													 scaleArray(getSineWaveShifted(0), 1),
 																 scaleArray(getSineWaveShifted(120), 1),
 																 scaleArray(getSineWaveShifted(240), 1),
-																 (short) 100, (short) 65535);
+																 (short) 100, (short) 100);
 
 	private static final int TYPE_LEN = 1;
 	private static final int SIZE_LEN = 2;
@@ -96,10 +96,10 @@ public class MotionPattern {
 	private byte[] piezoStackA = null;
 	private byte[] piezoStackB = null;
 	private byte[] piezoStackC = null;
-	private Attribute frequency = new Attribute("Frequency", "Hz", 100, 0, 999);
-	private Attribute amplitude = new Attribute("Amplitude", "%", 100, 0, 100);
-	private Attribute rotation = new Attribute("Rotation", "deg", 0, 0, 360);
-	private Attribute distortion = new Attribute("Distortion", "%", 0, 0, 100);
+	private Attribute frequency = new Attribute(this, "Frequency", "Hz", 100, 0, 999);
+	private Attribute amplitude = new Attribute(this, "Amplitude", "%", 100, 0, 100);
+	private Attribute rotation = new Attribute(this, "Rotation", "deg", 0, 0, 360);
+	private Attribute distortion = new Attribute(this, "Distortion", "%", 0, 0, 100);
 	private MotionPatternDisplayer displayer;
 	
 	/* MotionPattern
@@ -126,7 +126,7 @@ public class MotionPattern {
 		if (arrayA.length != arrayB.length || arrayA.length != arrayC.length)
 			throw new IllegalArgumentException("Mismatching array lengths");
 		
-		if (amp > 1)
+		if (amp > 100 || amp < 0)
 			throw new IllegalArgumentException("Invalid amplitude");
 		
 		this.name = name;
@@ -397,9 +397,9 @@ public class MotionPattern {
 			double cPct = ((double) cVal - 128) / 127;
 			
 			// Scale values with amplitude
-			aPct *= (((double) (((int) amplitude.getValue()*65535) & 0xFFFF)) / 65535);
-			bPct *= (((double) (((int) amplitude.getValue()*65535) & 0xFFFF)) / 65535);
-			cPct *= (((double) (((int) amplitude.getValue()*65535) & 0xFFFF)) / 65535);
+			aPct *= amplitude.getValue() / 100;
+			bPct *= amplitude.getValue() / 100;
+			cPct *= amplitude.getValue() / 100;
 
 			// Add the vectors to produce cartesian coordinates
 			double x = PIEZOSTACKA_X * aPct + PIEZOSTACKB_X * bPct + PIEZOSTACKC_X * cPct;

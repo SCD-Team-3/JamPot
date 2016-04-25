@@ -26,8 +26,7 @@ public class Attribute {
 	private double min;
 	private double max;
 
-	public Attribute(MotionPattern pattern, String name, String unit, double def, double min, double max) {
-		this.pattern = pattern;
+	public Attribute(String name, String unit, double def, double min, double max) {
 		this.name = name;
 		this.unit = unit;
 		this.value = def;

@@ -2,7 +2,6 @@ package application;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.scene.Scene;
 import javafx.scene.control.Slider;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -13,6 +12,10 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
 public class PatternSelectionPane extends Pane implements MotionPatternDisplayer {
+	private static final int HORIZONTAL_PATTERNS = 2;
+	private static final int VERTICAL_PATTERNS = 2;
+	private static final double[] xs = {10, 350};
+	private static final double[] ys = {10, 275};
 	
 	// Non-visible properties
 	private JamPot main;
@@ -20,35 +23,42 @@ public class PatternSelectionPane extends Pane implements MotionPatternDisplayer
 	private MotionPattern oldPattern;
 	
 	// On-screen elements
-	Slider slider;
-	Rectangle greenBorder;
+	private Slider slider;
+	private Rectangle greenBorder;
+	private NavButton accept;
+	private NavButton back;
+	private NavButton delete;
+	private PatternSelectionGroup[][] visiblePatterns;
 	
-	public PatternSelectionPane(JamPot newMain, MotionPattern back) {
+	public PatternSelectionPane(JamPot newMain, MotionPattern prev) {
 		main = newMain;
-		oldPattern = back;
+		oldPattern = prev;
 		
 		setBackground(new Background(new BackgroundFill(Color.rgb(26,26,26), null, null)));
 		
 		// Create & configure "Accept" button
-		NavButton accept = new NavButton("", 72.5, 130, e->acceptPatternSelection());
+		accept = new NavButton("", 72.5, 130, e->acceptPatternSelection());
 		Image ok = new Image("file:accept.png", 35, 35, true, true);
 		accept.setGraphic(new ImageView(ok));
 		getChildren().add(accept);
 		
 		// Create & configure "Delete" button
-		NavButton delete = new NavButton("", 275, 130, e->cancel());
+		delete = new NavButton("", 275, 130, e->delete());
 		Image x = new Image("file:delete.png", 35, 35, true, true);
 		delete.setGraphic(new ImageView(x));
 		getChildren().add(delete);		
 		
 		// Create & configure "Back" button
-		NavButton back = new NavButton("", 477.5, 130, e->back());
+		back = new NavButton("", 477.5, 130, e->back());
 		Image arrow = new Image("file:back.png", 35, 35, true, true);
 		back.setGraphic(new ImageView(arrow));
 		getChildren().add(back);	
 		
 		//Create and configure slider
-		slider = new SelectionSlider(-3,-1,-1); 
+		int pages = -main.getPatterns().size() / (VERTICAL_PATTERNS * HORIZONTAL_PATTERNS);
+		if (main.getPatterns().size() % (VERTICAL_PATTERNS * HORIZONTAL_PATTERNS) > 0)
+			pages++;
+		slider = new SelectionSlider(-pages,-1,-1); 
 		slider.valueProperty().addListener(new ChangeListener<Number>() {
 		    @Override
 		    public void changed(ObservableValue<? extends Number> observable,
@@ -60,57 +70,55 @@ public class PatternSelectionPane extends Pane implements MotionPatternDisplayer
 		getChildren().add(slider);
 		
 		//Create and configure slider buttons		
-		CircleButton increment = new CircleButton("+", 712.5, 25, e->change("+"));
+		CircleButton increment = new CircleButton(712.5, 25, e->change("+"));
 		Image up = new Image("file:up.png", 25, 35, true, true);
 		increment.setGraphic(new ImageView(up));
 		getChildren().add(increment);
-		CircleButton decrement = new CircleButton("-", 712.5, 470, e->change("-"));
+		CircleButton decrement = new CircleButton(712.5, 470, e->change("-"));
 		Image down = new Image("file:down.png", 25, 35, true, true);
 		decrement.setGraphic(new ImageView(down));
 		getChildren().add(decrement);
 		
-		//Create saved group
-		int CurrentSliderValue = (int) slider.getValue();
-		PatternSelectionGroup UpperLeft = new PatternSelectionGroup(storage.getSavePatternName(CurrentSliderValue*(-1)*4-3), 10, 10);
-		getChildren().add(UpperLeft); 
-		PatternSelectionGroup UpperRight = new PatternSelectionGroup(storage.getSavePatternName(CurrentSliderValue*(-1)*4-2), 350, 10);
-		getChildren().add(UpperRight);
-		PatternSelectionGroup LowerLeft = new PatternSelectionGroup(storage.getSavePatternName(CurrentSliderValue*(-1)*4-1), 10, 275);
-		getChildren().add(LowerLeft);
-		PatternSelectionGroup LowerRight = new PatternSelectionGroup(storage.getSavePatternName(CurrentSliderValue*(-1)*4), 350, 275);
-		getChildren().add(LowerRight);
-		
-		//Create pattern selection buttons
-		PatternSelectionButton UL = new PatternSelectionButton(10, 10, e->selectPattern(10, 10));
-		getChildren().add(UL);
-		PatternSelectionButton UR = new PatternSelectionButton(350, 10, e->selectPattern(350, 10));
-		getChildren().add(UR);
-		PatternSelectionButton LL = new PatternSelectionButton(10, 275, e->selectPattern(10, 275));
-		getChildren().add(LL);
-		PatternSelectionButton LR = new PatternSelectionButton(350, 275, e->selectPattern(350, 275));
-		getChildren().add(LR);
+		// Create and configure patterns
+		visiblePatterns = new PatternSelectionGroup[VERTICAL_PATTERNS][HORIZONTAL_PATTERNS];
+		for (int i = 0; i < visiblePatterns.length; i++) {
+			for (int j = 0; j < visiblePatterns[i].length; j++) {
+				int storageIndex = (int) (-slider.getValue()-1) + i * VERTICAL_PATTERNS + j;
+				if (storageIndex < main.getPatterns().size()) {
+					visiblePatterns[i][j] = new PatternSelectionGroup(main.getPatterns().get(storageIndex), xs[i], ys[j], this);
+					getChildren().add(visiblePatterns[i][j]);
+				}
+			}
+		}
 		
 		// Create and configure selected border
 		greenBorder = new Rectangle();
-	}
-	
-	public void selectPattern(double x, double y)
-	{
-		getChildren().remove(greenBorder);
-		// Grab selected pattern
-		
 		greenBorder.setStyle("-fx-border-color: green;");
 		greenBorder.setArcHeight(50);
 		greenBorder.setArcWidth(50);
 		greenBorder.setWidth(330);
 		greenBorder.setHeight(255);
-		greenBorder.setX(x);
-		greenBorder.setY(y);
 		greenBorder.setFill(Color.TRANSPARENT);
 		greenBorder.setStroke(Color.GREEN);
 		greenBorder.setStrokeWidth(3);
+	}
+	
+	public void selectPattern(MotionPattern selected)
+	{
+		getChildren().remove(greenBorder);
+		selectedPattern = selected;
 		
-		getChildren().add(greenBorder);
+		int selectedIndex = main.getPatterns().indexOf(selected);
+		int topLeftIndex = main.getPatterns().indexOf(visiblePatterns[0][0].getPattern());
+		
+		if (selectedIndex < 0 || topLeftIndex < 0 || selectedIndex < topLeftIndex)
+			System.out.println("Pattern does not exist");
+		else {
+			greenBorder.setX(xs[(selectedIndex - topLeftIndex) / HORIZONTAL_PATTERNS]);
+			greenBorder.setY(ys[(selectedIndex - topLeftIndex) % HORIZONTAL_PATTERNS]);
+		
+			getChildren().add(greenBorder);
+		}
 	}
 	
 	public void acceptPatternSelection()
@@ -129,31 +137,29 @@ public class PatternSelectionPane extends Pane implements MotionPatternDisplayer
 				slider.setValue(slider.getValue()-1);
 		}
 		
-	   	Pane pane = getPatternSelectionPane();
-	   	pane.getChildren().remove(GreenBorder);
-		Scene scene= new Scene(pane, 800, 600);
-		theStage.setScene(scene);
-	
+		for (int i = 0; i < visiblePatterns.length; i++) {
+			for (int j = 0; j < visiblePatterns[i].length; j++) {
+				int storageIndex = (int) slider.getValue() + i * VERTICAL_PATTERNS + j;
+				if (storageIndex < main.getPatterns().size())
+					visiblePatterns[i][j].setPattern(main.getPatterns().get(storageIndex));
+			}
+		}
+		selectPattern(selectedPattern);
 	}
 	
-	public void cancel()
+	public void delete()
 	{
-		System.out.println("Cancel");
-		Scene scene= new Scene(getHomePane(), 800, 600);
-		theStage.setScene(scene);
+		main.removePattern(selectedPattern);
+		// Redraw pane
 	}
 		
 	public void back()
 	{
-		System.out.println("Back");
-		Scene scene= new Scene(getHomePane(), 800, 600);
-		theStage.setScene(scene);
+		main.goToHomePane(oldPattern);
 	}
 
-	@Override
 	public void update(MotionPattern callingPattern) {
-		// TODO Auto-generated method stub
-
+		// Should never be called
 	}
 
 }

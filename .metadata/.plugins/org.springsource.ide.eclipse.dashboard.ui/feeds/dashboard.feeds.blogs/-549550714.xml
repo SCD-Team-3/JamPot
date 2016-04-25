@@ -5,7 +5,48 @@
   <link rel="self" href="https://spring.io/blog.atom" />
   <id>http://spring.io/blog.atom</id>
   <icon>https://spring.io/favicon.ico</icon>
-  <updated>2016-04-19T13:37:00Z</updated>
+  <updated>2016-04-21T14:13:50Z</updated>
+  <entry>
+    <title>Spring Security 4.1.0.RC2 Released</title>
+    <link rel="alternate" href="https://spring.io/blog/2016/04/21/spring-security-4-1-0-rc2-released" />
+    <category term="releases" label="Releases" />
+    <author>
+      <name>Rob Winch</name>
+    </author>
+    <id>tag:spring.io,2016-04-21:2474</id>
+    <updated>2016-04-21T14:13:50Z</updated>
+    <content type="html">&lt;p&gt;On behalf of the community, I&amp;rsquo;m pleased to announce the release of Spring Security 4.1.0.RC2. This release resolved over &lt;a href="https://github.com/spring-projects/spring-security/milestones/4.1.0%20RC2"&gt;60 tickets&lt;/a&gt;. &lt;/p&gt;&lt;h1&gt;&lt;a href="#what-rsquo-s-new-in-4-1" class="anchor" name="what-rsquo-s-new-in-4-1"&gt;&lt;/a&gt;What&amp;rsquo;s New in 4.1&lt;/h1&gt;
+&lt;p&gt;You can find a good summary of &lt;a href="http://docs.spring.io/spring-security/site/docs/4.1.0.RC2/reference/htmlsingle/#new"&gt;What&amp;rsquo;s New in Spring Security 4.1&lt;/a&gt; in the reference documentation.&lt;/p&gt;&lt;h1&gt;&lt;a href="#contributions" class="anchor" name="contributions"&gt;&lt;/a&gt;Contributions&lt;/h1&gt;
+&lt;p&gt;Without the community we couldn&amp;rsquo;t be the successful project we are today. I&amp;rsquo;d like to thank everyone that created issues &amp;amp; provided feedback. A special thanks to the following people who provided pull requests for this release:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href="https://github.com/spring-projects/spring-security/pull/51"&gt;#51&lt;/a&gt; - SEC-1932 Add Pbkdf2PasswordEncoder Thanks &lt;a href="https://github.com/rworsnop"&gt;Rob Worsnop&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href="https://github.com/spring-projects/spring-security/pull/180"&gt;#180&lt;/a&gt; - Allow setting alwaysRemember from RememberMeConfigurer Thanks &lt;a href="https://github.com/leon"&gt;Leon Radley&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href="https://github.com/spring-projects/spring-security/pull/183"&gt;#183&lt;/a&gt; - Remove duplicate test. Thanks &lt;a href="https://github.com/izeye"&gt;Johnny Lim&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href="https://github.com/spring-projects/spring-security/pull/193"&gt;#193&lt;/a&gt; - Fix corrupted character and add formatting per the duplicated text block Thanks &lt;a href="https://github.com/artbristol"&gt;Art O Cathain&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href="https://github.com/spring-projects/spring-security/pull/196"&gt;#196&lt;/a&gt; - SEC-2978: fix typos in documentation Thanks &lt;a href="https://github.com/skyhills13"&gt;Soeun Park&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href="https://github.com/spring-projects/spring-security/pull/197"&gt;#197&lt;/a&gt; - Update HttpSecurity.java logout() sample code Thanks &lt;a href="https://github.com/JTWalraven"&gt;Jeffrey Walraven&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href="https://github.com/spring-projects/spring-security/pull/228"&gt;#228&lt;/a&gt; - Fix typos Thanks &lt;a href="https://github.com/izeye"&gt;Johnny Lim&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href="https://github.com/spring-projects/spring-security/pull/3764"&gt;#3764&lt;/a&gt; - Authentication Success and Failure Handlers in AbstractPreAuthenticatedProcessingFilter Thanks &lt;a href="https://github.com/shazin"&gt;Shazin Sadakath&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href="https://github.com/spring-projects/spring-security/pull/3777"&gt;#3777&lt;/a&gt; - Content Negotiating Logout Success Handler #3282 Thanks &lt;a href="https://github.com/shazin"&gt;Shazin Sadakath&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href="https://github.com/spring-projects/spring-security/pull/3779"&gt;#3779&lt;/a&gt; - BouncyCastle implementation of &amp;ldquo;AES/CBC/PKCS5Padding&amp;rdquo; and &amp;ldquo;AES/GCM/NoPadding&amp;rdquo; Thanks &lt;a href="https://github.com/william-tran"&gt;Will Tran&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href="https://github.com/spring-projects/spring-security/pull/3782"&gt;#3782&lt;/a&gt; - SpEL variables can be referenced in the expression using the syntax #… Thanks &lt;a href="https://github.com/ksokol"&gt;Kamill Sokol&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href="https://github.com/spring-projects/spring-security/pull/3785"&gt;#3785&lt;/a&gt; - Fix typo in xsd Thanks &lt;a href="https://github.com/Qkyrie"&gt;Quinten De Swaef&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href="https://github.com/spring-projects/spring-security/pull/3793"&gt;#3793&lt;/a&gt; - SecurityMockMvcResultMatchers.withAuthorities(Collection&amp;lt;? extends GrantedAuthority&amp;gt;) Thanks &lt;a href="https://github.com/eddumelendez"&gt;Eddú Meléndez Gonzales&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href="https://github.com/spring-projects/spring-security/pull/3800"&gt;#3800&lt;/a&gt; - Add GitHub Pull Request template Thanks &lt;a href="https://github.com/vpavic"&gt;Vedran Pavi?&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href="https://github.com/spring-projects/spring-security/pull/3803"&gt;#3803&lt;/a&gt; - Fix typo in setMessageExpessionHandler Thanks &lt;a href="https://github.com/McNetic"&gt;Nicolai Ehemann&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href="https://github.com/spring-projects/spring-security/pull/3807"&gt;#3807&lt;/a&gt; - Update ExpressionUrlAuthorizationConfigurer.java Thanks &lt;a href="https://github.com/mmerdes"&gt;Matthias Merdes&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href="https://github.com/spring-projects/spring-security/pull/3811"&gt;#3811&lt;/a&gt; - Update TestNG Thanks &lt;a href="https://github.com/mdeinum"&gt;Marten Deinum&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href="https://github.com/spring-projects/spring-security/pull/3813"&gt;#3813&lt;/a&gt; - HeaderWriterFilter: Fix Javadoc. Thanks &lt;a href="https://github.com/simono"&gt;Simon Olofsson&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href="https://github.com/spring-projects/spring-security/pull/3816"&gt;#3816&lt;/a&gt; - Skip tests when AesBytesEncryptor can&amp;rsquo;t be created in CBC or GCM mode. Thanks &lt;a href="https://github.com/william-tran"&gt;Will Tran&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href="https://github.com/spring-projects/spring-security/pull/3817"&gt;#3817&lt;/a&gt; - Refactor test assumptions about JCE to common class. Thanks &lt;a href="https://github.com/william-tran"&gt;Will Tran&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href="https://github.com/spring-projects/spring-security/pull/3819"&gt;#3819&lt;/a&gt; - Fix HpkpHeaderWriter Javadoc formatting Thanks &lt;a href="https://github.com/ansyeow"&gt;Andrew NS Yeow&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href="https://github.com/spring-projects/spring-security/pull/3822"&gt;#3822&lt;/a&gt; - Only use methods present in Bouncy Castle 1.47. Thanks &lt;a href="https://github.com/william-tran"&gt;Will Tran&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href="https://github.com/spring-projects/spring-security/pull/3826"&gt;#3826&lt;/a&gt; - Remove duplicate words Thanks &lt;a href="https://github.com/izeye"&gt;Johnny Lim&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;&lt;h1&gt;&lt;a href="#feedback-please" class="anchor" name="feedback-please"&gt;&lt;/a&gt;Feedback Please&lt;/h1&gt;
+&lt;p&gt;If you have feedback on this release, I encourage you to reach out via &lt;a href="http://stackoverflow.com/questions/tagged/spring-security"&gt;StackOverflow&lt;/a&gt;, &lt;a href="https://github.com/spring-projects/spring-security/issues"&gt;GitHub Issues&lt;/a&gt;, or via the comments section. You can also ping me &lt;a href="https://twitter.com/rob_winch"&gt;@rob_winch&lt;/a&gt; or Joe (our latest full time Spring Security team member) &lt;a href="https://twitter.com/joe_grandja"&gt;@joe_grandja&lt;/a&gt; on Twitter.&lt;/p&gt;
+&lt;p&gt;Of course the best feedback comes in the form of &lt;a href="https://github.com/spring-projects/spring-security/blob/master/CONTRIBUTING.md"&gt;contributions&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;a href="http://projects.spring.io/spring-security/"&gt;Project Site&lt;/a&gt; | &lt;a href="http://docs.spring.io/spring-security/site/docs/4.1.0.RC2/reference/htmlsingle/"&gt;Reference&lt;/a&gt; | &lt;a href="http://docs.spring.io/spring-security/site/docs/4.1.0.RC2/guides/html5/"&gt;Guides&lt;/a&gt; | &lt;a href="http://stackoverflow.com/questions/tagged/spring-security"&gt;Help&lt;/a&gt;&lt;/p&gt;</content>
+  </entry>
   <entry>
     <title>Understanding Reactive types</title>
     <link rel="alternate" href="https://spring.io/blog/2016/04/19/understanding-reactive-types" />
@@ -99,7 +140,7 @@
       <name>Phil Webb</name>
     </author>
     <id>tag:spring.io,2016-04-15:2471</id>
-    <updated>2016-04-15T18:37:28Z</updated>
+    <updated>2016-04-15T18:37:00Z</updated>
     <content type="html">&lt;p&gt;One of the nice things about working for Pivotal is that they have a great agile development division called Pivotal Labs. The teams within Labs are big proponents of Lean and XP software methodologies such as pair programming and test-driven development. Their love of testing has had a particular impact on Spring Boot 1.4 as we&amp;rsquo;ve started to get great feedback on things that could be improved. This blog post highlights some of the new testing features that have just landed in the latest M2 release.&lt;/p&gt;&lt;h2&gt;&lt;a href="#testing-without-spring" class="anchor" name="testing-without-spring"&gt;&lt;/a&gt;Testing without Spring&lt;/h2&gt;
 &lt;p&gt;The easiest way to unit test any Spring &lt;code&gt;@Component&lt;/code&gt; is to not involve Spring at all! It&amp;rsquo;s always best to try and structure your code so that classes can be instantiated and tested directly. Usually that boils down to a few things:&lt;/p&gt;
 &lt;ul&gt;
@@ -352,7 +393,7 @@ public class UserVehicleControllerTests {&#xD;
 &lt;p&gt;If you need to test that JSON serialization is working as expected, you can use &lt;code&gt;@JsonTest&lt;/code&gt;. This will:&lt;/p&gt;
 &lt;ul&gt;
   &lt;li&gt;Auto-configure Jackson and/or Gson&lt;/li&gt;
-  &lt;li&gt;Add any &lt;code&gt;Module&lt;/code&gt; or &lt;code&gt;@JsonComonent&lt;/code&gt; beans that you&amp;rsquo;ve defined&lt;/li&gt;
+  &lt;li&gt;Add any &lt;code&gt;Module&lt;/code&gt; or &lt;code&gt;@JsonComponent&lt;/code&gt; beans that you&amp;rsquo;ve defined&lt;/li&gt;
   &lt;li&gt;Trigger initialization of any &lt;code&gt;JacksonTester&lt;/code&gt; or &lt;code&gt;GsonTester&lt;/code&gt; fields&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;Here&amp;rsquo;s an example:&lt;/p&gt;
@@ -374,7 +415,7 @@ public class VehicleDetailsJsonTests {&#xD;
 &#xD;
 }
 &lt;/code&gt;&lt;/pre&gt;&lt;h2&gt;&lt;a href="#summary" class="anchor" name="summary"&gt;&lt;/a&gt;Summary&lt;/h2&gt;
-&lt;p&gt;If you want to try out the new testing features in Spring Boot 1.4 you can grab M2 from &lt;a href="http://repo.spring.io/snapshot/"&gt;http://repo.spring.io/snapshot/&lt;/a&gt;. There&amp;rsquo;s also a sample project &lt;a href="https://github.com/spring-projects/spring-boot/tree/v1.4.0.M2/spring-boot-samples/spring-boot-sample-test"&gt;available on GitHub&lt;/a&gt; as well as the &lt;a href="http://docs.spring.io/spring-boot/docs/1.3.0.M2/reference/htmlsingle/#boot-features-testing"&gt;updated documentation&lt;/a&gt;. If you&amp;rsquo;ve got any suggestions for addition &amp;ldquo;slices&amp;rdquo; that we should support, or any further improvements that you&amp;rsquo;d like to see, &lt;a href="https://github.com/spring-projects/spring-boot/issues/new"&gt;please raise an issue&lt;/a&gt;.&lt;/p&gt;</content>
+&lt;p&gt;If you want to try out the new testing features in Spring Boot 1.4 you can grab M2 from &lt;a href="http://repo.spring.io/snapshot/"&gt;http://repo.spring.io/snapshot/&lt;/a&gt;. There&amp;rsquo;s also a sample project &lt;a href="https://github.com/spring-projects/spring-boot/tree/v1.4.0.M2/spring-boot-samples/spring-boot-sample-test"&gt;available on GitHub&lt;/a&gt; as well as the &lt;a href="http://docs.spring.io/spring-boot/docs/1.4.0.M2/reference/htmlsingle/#boot-features-testing"&gt;updated documentation&lt;/a&gt;. If you&amp;rsquo;ve got any suggestions for addition &amp;ldquo;slices&amp;rdquo; that we should support, or any further improvements that you&amp;rsquo;d like to see, &lt;a href="https://github.com/spring-projects/spring-boot/issues/new"&gt;please raise an issue&lt;/a&gt;.&lt;/p&gt;</content>
   </entry>
   <entry>
     <title>SpringOne Platform</title>
@@ -978,43 +1019,5 @@ public MessageHandler kafkaProducerHandler(&#xD;
   &lt;li&gt;Spring Data Elasticsearch 2.0.1 - &lt;a href="https://repo.spring.io/libs-release/org/springframework/data/spring-data-elasticsearch/2.0.1.RELEASE"&gt;Artifacts&lt;/a&gt; - &lt;a href="http://docs.spring.io/spring-data/elasticsearch/docs/2.0.1.RELEASE/api"&gt;JavaDocs&lt;/a&gt; - &lt;a href="http://docs.spring.io/spring-data/elasticsearch/docs/2.0.1.RELEASE/reference/html"&gt;Documentation&lt;/a&gt; - &lt;a href="http://docs.spring.io/spring-data/elasticsearch/docs/2.0.1.RELEASE/changelog.txt"&gt;Changelog&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;Spring Data Couchbase 2.1.1 - &lt;a href="https://repo.spring.io/libs-release/org/springframework/data/spring-data-couchbase/2.1.1.RELEASE"&gt;Artifacts&lt;/a&gt; - &lt;a href="http://docs.spring.io/spring-data/couchbase/docs/2.1.1.RELEASE/api"&gt;JavaDocs&lt;/a&gt; - &lt;a href="http://docs.spring.io/spring-data/couchbase/docs/2.1.1.RELEASE/reference/html"&gt;Documentation&lt;/a&gt; - &lt;a href="http://docs.spring.io/spring-data/couchbase/docs/2.1.1.RELEASE/changelog.txt"&gt;Changelog&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;</content>
-  </entry>
-  <entry>
-    <title>Spring Framework 4.3 goes RC1</title>
-    <link rel="alternate" href="https://spring.io/blog/2016/04/06/spring-framework-4-3-goes-rc1" />
-    <category term="releases" label="Releases" />
-    <author>
-      <name>Juergen Hoeller</name>
-    </author>
-    <id>tag:spring.io,2016-04-05:2451</id>
-    <updated>2016-04-06T09:00:00Z</updated>
-    <content type="html">&lt;p&gt;Dear Spring community,&lt;/p&gt;
-&lt;p&gt;It is my pleasure to announce that a feature-complete Spring Framework 4.3 release candidate is &lt;a href="http://projects.spring.io/spring-framework/"&gt;available&lt;/a&gt; now! This is a perfect opportunity for you to get involved: Please run your regression tests against it, and of course, feel free to try the new features&amp;hellip;&lt;/p&gt;
-&lt;h3&gt;Dependency injection refinements:&lt;/h3&gt;
-&lt;ul&gt;
-  &lt;li&gt;@Autowired injection of Map/Collection beans and self references&lt;/li&gt;
-  &lt;li&gt;@Autowired on configuration class constructors (finally!)&lt;/li&gt;
-  &lt;li&gt;No need for declaring @Autowired on a unique non-default constructor&lt;/li&gt;
-  &lt;li&gt;ObjectProvider as a richer variant of an ObjectFactory handle&lt;/li&gt;
-  &lt;li&gt;InjectionPoint/DependencyDescriptor as an injectable argument for @Bean methods&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h3&gt;MVC processing refinements:&lt;/h3&gt;
-&lt;ul&gt;
-  &lt;li&gt;Default processing of OPTIONS, HEAD, Allow and If-Unmodified-Since&lt;/li&gt;
-  &lt;li&gt;Support for custom HTTP Vary configuration and HTTP Range on custom resources&lt;/li&gt;
-  &lt;li&gt;Precomposed @GetMapping, @PostMapping, @RequestScope, @SessionScope etc&lt;/li&gt;
-  &lt;li&gt;@RequestAttribute and @SessionAttribute as handler method arguments&lt;/li&gt;
-  &lt;li&gt;Full support for Jackson 2.7&amp;rsquo;s new type resolution algorithm&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h3&gt;Various infrastructural refinements across the framework:&lt;/h3&gt;
-&lt;ul&gt;
-  &lt;li&gt;Wider support for composed annotations and for placeholders/expressions in attributes&lt;/li&gt;
-  &lt;li&gt;Richer programmatic metadata in core container exceptions&lt;/li&gt;
-  &lt;li&gt;Component scanning in manifest-defined classpath entries&lt;/li&gt;
-  &lt;li&gt;A background initialization option for bootstrapping JPA / Hibernate&lt;/li&gt;
-  &lt;li&gt;A &amp;lsquo;sync&amp;rsquo; flag on @Cacheable and support for the Caffeine cache provider&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;We are working towards an RC2 with some remaining fine-tuning and performance improvements in the meantime, preparing for 4.3&amp;rsquo;s general availability on June 1st!&lt;/p&gt;
-&lt;p&gt;Cheers,&lt;br/&gt;Juergen&lt;/p&gt;</content>
   </entry>
 </feed>

@@ -95,6 +95,7 @@ public class QuickAccessGroup extends Group {
 	}
 	
 	public void updateValue() {
-		this.value.setText(Integer.toString((int) attr.getValue()) + " " + attr.getUnit());
+		System.out.println(attr.getName() + ", " + attr.getValue());
+		this.value.setText(Double.toString(attr.getValue()) + " " + attr.getUnit());
 	}
 }

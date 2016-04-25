@@ -20,8 +20,6 @@ public class PatternSelectionGroup extends Group implements MotionPatternDisplay
 	private static final double ARC_RADIUS = 50;
 	private static final double FONT_SIZE = 24;
 	private static final double PADDING = 30;
-	private static final int PATTERN_SIDE = 240;
-	private static final int PATTERN_PADDING = 0;
 	private MotionPattern pattern;
 	private PatternSelectionPane manager;
 	private Rectangle outline;
@@ -66,9 +64,9 @@ public class PatternSelectionGroup extends Group implements MotionPatternDisplay
 		getChildren().add(title);
 		
 		// Display motion pattern image
-		patternImage = pattern.getImage(PATTERN_SIDE, PATTERN_SIDE, Color.rgb(26, 26, 26), Color.WHITE, 2);
-		patternImage.setTranslateX(x + WIDTH/2 - PATTERN_SIDE/2);
-		patternImage.setTranslateY(y + PATTERN_PADDING);
+		patternImage = pattern.getImage(200, 200, Color.rgb(26, 26, 26), Color.WHITE, 2);
+		patternImage.setTranslateX(x + 10);
+		patternImage.setTranslateY(y + 10);
 		getChildren().add(patternImage);
 		
 		
@@ -94,9 +92,9 @@ public class PatternSelectionGroup extends Group implements MotionPatternDisplay
 			throw new IllegalArgumentException("Calling pattern does not match current pattern");
 		
 		getChildren().remove(patternImage);
-		patternImage = pattern.getImage(PATTERN_SIDE, PATTERN_SIDE, Color.rgb(26, 26, 26), Color.WHITE, 2);
-		patternImage.setTranslateX(x + WIDTH/2 - PATTERN_SIDE/2);
-		patternImage.setTranslateY(y + PATTERN_PADDING);
+		patternImage = pattern.getImage(200, 200, Color.rgb(26, 26, 26), Color.WHITE, 2);
+		patternImage.setTranslateX(x + 10);
+		patternImage.setTranslateY(y + 10);
 		getChildren().add(patternImage);
 		
 	}

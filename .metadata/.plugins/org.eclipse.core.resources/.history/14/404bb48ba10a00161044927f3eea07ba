@@ -2,7 +2,6 @@ package application;
 
 import javafx.geometry.Pos;
 import javafx.scene.Group;
-import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -20,25 +19,16 @@ public class PatternSelectionGroup extends Group implements MotionPatternDisplay
 	private static final double ARC_RADIUS = 50;
 	private static final double FONT_SIZE = 24;
 	private static final double PADDING = 30;
-	private static final int PATTERN_SIDE = 240;
-	private static final int PATTERN_PADDING = 0;
 	private MotionPattern pattern;
 	private PatternSelectionPane manager;
 	private Rectangle outline;
 	private Rectangle fill;
 	private Label title;
 	private PatternSelectionButton button;
-	private Canvas patternImage;
-	private double x;
-	private double y;
 	
 	public PatternSelectionGroup(MotionPattern pattern, double x, double y, PatternSelectionPane manager) 
 	{
 		this.manager = manager;
-		this.x = x;
-		this.y = y;
-		this.pattern = pattern;
-		pattern.setDisplayer(this);
 		
 		// Create and configure outline
 		outline = new Rectangle(x, y, WIDTH, HEIGHT);
@@ -65,11 +55,9 @@ public class PatternSelectionGroup extends Group implements MotionPatternDisplay
 		title.setTextFill(Color.WHITE);
 		getChildren().add(title);
 		
-		// Display motion pattern image
-		patternImage = pattern.getImage(PATTERN_SIDE, PATTERN_SIDE, Color.rgb(26, 26, 26), Color.WHITE, 2);
-		patternImage.setTranslateX(x + WIDTH/2 - PATTERN_SIDE/2);
-		patternImage.setTranslateY(y + PATTERN_PADDING);
-		getChildren().add(patternImage);
+		// 
+		this.pattern = pattern;
+		pattern.setDisplayer(this);
 		
 		
 		// Create and configure button
@@ -89,15 +77,9 @@ public class PatternSelectionGroup extends Group implements MotionPatternDisplay
 		pattern = newPattern;
 	}
 
+	@Override
 	public void update(MotionPattern callingPattern) {
-		if (callingPattern != pattern)
-			throw new IllegalArgumentException("Calling pattern does not match current pattern");
-		
-		getChildren().remove(patternImage);
-		patternImage = pattern.getImage(PATTERN_SIDE, PATTERN_SIDE, Color.rgb(26, 26, 26), Color.WHITE, 2);
-		patternImage.setTranslateX(x + WIDTH/2 - PATTERN_SIDE/2);
-		patternImage.setTranslateY(y + PATTERN_PADDING);
-		getChildren().add(patternImage);
+		// TODO Auto-generated method stub
 		
 	}
 }

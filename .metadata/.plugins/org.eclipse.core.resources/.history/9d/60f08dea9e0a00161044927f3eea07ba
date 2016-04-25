@@ -36,10 +36,10 @@ public class JamPot extends Application {
 		
 		// TODO Read patterns from file into arraylist
 		patterns = new ArrayList<MotionPattern>();
-		patterns.add(MotionPattern.CIRCLE);
 		patterns.add(MotionPattern.LINE_A);
 		patterns.add(MotionPattern.LINE_B);
 		patterns.add(MotionPattern.LINE_C);
+		patterns.add(MotionPattern.CIRCLE);
 		
 		theStage = primaryStage; 
 		

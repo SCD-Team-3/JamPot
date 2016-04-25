@@ -156,7 +156,6 @@ public class PatternSelectionPane extends Pane {
 		for (int i = 0; i < visiblePatterns.length; i++)
 			for (int j = 0; j < visiblePatterns[i].length; j++)
 				getChildren().remove(visiblePatterns[i][j]);
-		getChildren().remove(greenBorder);
 		
 		// Re-add all patterns to display
 		visiblePatterns = new PatternSelectionGroup[VERTICAL_PATTERNS][HORIZONTAL_PATTERNS];

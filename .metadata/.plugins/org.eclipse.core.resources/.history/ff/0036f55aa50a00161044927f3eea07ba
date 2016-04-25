@@ -20,8 +20,8 @@ public class PatternSelectionGroup extends Group implements MotionPatternDisplay
 	private static final double ARC_RADIUS = 50;
 	private static final double FONT_SIZE = 24;
 	private static final double PADDING = 30;
-	private static final int PATTERN_SIDE = 240;
-	private static final int PATTERN_PADDING = 0;
+	private static final int PATTERN_SIDE = 220;
+	private static final int PATTERN_PADDING = 10;
 	private MotionPattern pattern;
 	private PatternSelectionPane manager;
 	private Rectangle outline;

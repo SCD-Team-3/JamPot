@@ -149,31 +149,17 @@ public class PatternSelectionPane extends Pane {
 	
 	public void delete()
 	{
-		// Remove pattern from storage
 		main.removePattern(selectedPattern);
-		
-		// Remove patterns from display
-		for (int i = 0; i < visiblePatterns.length; i++)
-			for (int j = 0; j < visiblePatterns[i].length; j++)
-				getChildren().remove(visiblePatterns[i][j]);
-		getChildren().remove(greenBorder);
-		
-		// Re-add all patterns to display
-		visiblePatterns = new PatternSelectionGroup[VERTICAL_PATTERNS][HORIZONTAL_PATTERNS];
-		for (int i = 0; i < visiblePatterns.length; i++) {
-			for (int j = 0; j < visiblePatterns[i].length; j++) {
-				int storageIndex = (int) (-slider.getValue()-1) + i * VERTICAL_PATTERNS + j;
-				if (storageIndex < main.getPatterns().size()) {
-					visiblePatterns[i][j] = new PatternSelectionGroup(main.getPatterns().get(storageIndex), xs[i], ys[j], this);
-					getChildren().add(visiblePatterns[i][j]);
-				}
-			}
-		}
+		// Redraw pane
 	}
 		
 	public void back()
 	{
 		main.goToHomePane(oldPattern);
+	}
+
+	public void update(MotionPattern callingPattern) {
+		// Should never be called
 	}
 
 }
