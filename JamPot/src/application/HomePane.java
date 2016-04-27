@@ -31,7 +31,7 @@ public class HomePane extends Pane implements MotionPatternDisplayer {
 		main = newMain;
 		
 		// Configure pattern
-		pattern = newPattern;
+		pattern = new MotionPattern(newPattern);
 		pattern.setDisplayer(this);
 		
 		// Establish background image

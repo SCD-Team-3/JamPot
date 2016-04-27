@@ -28,6 +28,7 @@ public class EditPane extends Pane implements MotionPatternDisplayer {
 	public EditPane(JamPot newMain, MotionPattern newPattern) {
 		main = newMain;
 		pattern = newPattern;
+		pattern.setDisplayer(this);
 		
 		setBackground(new Background(new BackgroundFill(Color.rgb(26, 26, 26), null, null)));
 		
@@ -50,13 +51,21 @@ public class EditPane extends Pane implements MotionPatternDisplayer {
 		// Create and configure Distortion grouping
 		distortionGrp = new QuickAccessGroup(pattern.getDistortion(), 535, 275);
 		getChildren().add(distortionGrp);
+		
+		// Display motion pattern image
+		patternImage = pattern.getImage(515, 515, Color.rgb(26, 26, 26), Color.WHITE, 2);
+		patternImage.setTranslateX(10);
+		patternImage.setTranslateY(10);
+		getChildren().add(patternImage);
 	}
 	
 	public void accept() {
+		pattern.applyDistortion();
 		main.goToHomePane(pattern);
 	}
 	
 	public void cancel() {
+		pattern.rejectDistortion();
 		main.goToHomePane(pattern);
 	}
 	

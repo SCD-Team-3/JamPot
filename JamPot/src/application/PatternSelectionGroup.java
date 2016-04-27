@@ -38,7 +38,8 @@ public class PatternSelectionGroup extends Group implements MotionPatternDisplay
 		this.x = x;
 		this.y = y;
 		this.pattern = pattern;
-		pattern.setDisplayer(this);
+		if (pattern != null)
+			pattern.setDisplayer(this);
 		
 		// Create and configure outline
 		outline = new Rectangle(x, y, WIDTH, HEIGHT);
@@ -55,7 +56,10 @@ public class PatternSelectionGroup extends Group implements MotionPatternDisplay
 		getChildren().add(fill);
 		
 		// Create and configure label
-		title = new Label(pattern.getName());
+		if (pattern != null)
+			title = new Label(pattern.getName());
+		else
+			title = new Label("");
 		title.setFont(Font.font("Calibri", FontWeight.NORMAL, FONT_SIZE));
 		title.setAlignment(Pos.TOP_CENTER);
 		title.setTextAlignment(TextAlignment.CENTER);
@@ -66,10 +70,12 @@ public class PatternSelectionGroup extends Group implements MotionPatternDisplay
 		getChildren().add(title);
 		
 		// Display motion pattern image
-		patternImage = pattern.getImage(PATTERN_SIDE, PATTERN_SIDE, Color.rgb(26, 26, 26), Color.WHITE, 2);
-		patternImage.setTranslateX(x + WIDTH/2 - PATTERN_SIDE/2);
-		patternImage.setTranslateY(y + PATTERN_PADDING);
-		getChildren().add(patternImage);
+		if (pattern != null) {
+			patternImage = pattern.getImage(PATTERN_SIDE, PATTERN_SIDE, Color.rgb(26, 26, 26), Color.WHITE, 2);
+			patternImage.setTranslateX(x + WIDTH/2 - PATTERN_SIDE/2);
+			patternImage.setTranslateY(y + PATTERN_PADDING);
+			getChildren().add(patternImage);
+		}
 		
 		
 		// Create and configure button
@@ -87,6 +93,7 @@ public class PatternSelectionGroup extends Group implements MotionPatternDisplay
 	
 	public void setPattern(MotionPattern newPattern) {
 		pattern = newPattern;
+		update(pattern);
 	}
 
 	public void update(MotionPattern callingPattern) {
@@ -94,10 +101,16 @@ public class PatternSelectionGroup extends Group implements MotionPatternDisplay
 			throw new IllegalArgumentException("Calling pattern does not match current pattern");
 		
 		getChildren().remove(patternImage);
-		patternImage = pattern.getImage(PATTERN_SIDE, PATTERN_SIDE, Color.rgb(26, 26, 26), Color.WHITE, 2);
-		patternImage.setTranslateX(x + WIDTH/2 - PATTERN_SIDE/2);
-		patternImage.setTranslateY(y + PATTERN_PADDING);
-		getChildren().add(patternImage);
+		getChildren().remove(button);
+		title.setText("");
+		if (pattern != null) {
+			title.setText(pattern.getName());
+			patternImage = pattern.getImage(PATTERN_SIDE, PATTERN_SIDE, Color.rgb(26, 26, 26), Color.WHITE, 2);
+			patternImage.setTranslateX(x + WIDTH/2 - PATTERN_SIDE/2);
+			patternImage.setTranslateY(y + PATTERN_PADDING);
+			getChildren().add(patternImage);
+		}
+		getChildren().add(button);
 		
 	}
 }

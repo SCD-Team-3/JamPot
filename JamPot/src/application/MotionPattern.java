@@ -17,12 +17,15 @@
 
 package application;
 
+import java.io.Serializable;
 import java.lang.IllegalArgumentException;
 import javafx.scene.canvas.*;
 import javafx.scene.paint.Color;
 
-public class MotionPattern {
+public class MotionPattern implements Serializable {
 	
+	private static final long serialVersionUID = 9008983440218329931L;
+
 	private static final byte[] SINEWAVE = shortToByteArray(new short[] {
 			0x80,0x83,0x86,0x89,0x8c,0x8f,0x92,0x95,0x98,0x9c,0x9f,0xa2,0xa5,0xa8,0xab,0xae,
 			0xb0,0xb3,0xb6,0xb9,0xbc,0xbf,0xc1,0xc4,0xc7,0xc9,0xcc,0xce,0xd1,0xd3,0xd5,0xd8,
@@ -98,9 +101,9 @@ public class MotionPattern {
 	private byte[] piezoStackC = null;
 	private Attribute frequency = new Attribute(this, "Frequency", "Hz", 100, 0, 999);
 	private Attribute amplitude = new Attribute(this, "Amplitude", "%", 100, 0, 100);
-	private Attribute rotation = new Attribute(this, "Rotation", "deg", 0, 0, 360);
+	private Attribute rotation = new Attribute(this, "Rotation", "\u00b0", 0, 0, 360);
 	private Attribute distortion = new Attribute(this, "Distortion", "%", 0, 0, 100);
-	private MotionPatternDisplayer displayer;
+	transient private MotionPatternDisplayer displayer;
 	
 	/* MotionPattern
 	 * Author: Will Weaver
@@ -130,12 +133,30 @@ public class MotionPattern {
 			throw new IllegalArgumentException("Invalid amplitude");
 		
 		this.name = name;
-		this.piezoStackA = arrayA;
-		this.piezoStackB = arrayB;
-		this.piezoStackC = arrayC;
+		this.piezoStackA = new byte[arrayA.length];
+		this.piezoStackB = new byte[arrayB.length];
+		this.piezoStackC = new byte[arrayC.length];
+		for (int i = 0; i < this.piezoStackA.length; i++)
+			this.piezoStackA[i] = arrayA[i];
+		for (int i = 0; i < this.piezoStackB.length; i++)
+			this.piezoStackB[i] = arrayB[i];
+		for (int i = 0; i < this.piezoStackC.length; i++)
+			this.piezoStackC[i] = arrayC[i];
 		this.frequency.setValue(freq);
 		this.amplitude.setValue(amp);
 		this.length = (short) arrayA.length;
+	}
+	
+	public MotionPattern(MotionPattern original) {
+		this(original.getName(),
+			 original.getPiezoStackA(),
+			 original.getPiezoStackB(),
+			 original.getPiezoStackC(),
+			 (short) original.getFrequency().getValue(),
+			 original.getAmplitude().getValue());
+		this.setDistortion(original.getDistortion().getValue());
+		this.setRotation(original.getRotation().getValue());
+		this.setDisplayer(original.getDisplayer());
 	}
 	
 	public String getName() {
@@ -148,6 +169,10 @@ public class MotionPattern {
 	
 	public void setDisplayer(MotionPatternDisplayer newDisplayer) {
 		displayer = newDisplayer;
+	}
+	
+	public MotionPatternDisplayer getDisplayer() {
+		return this.displayer;
 	}
 	
 	/* setLength
@@ -211,6 +236,27 @@ public class MotionPattern {
 			piezoStackC[i] = array[i];
 	}
 	
+	public byte[] getPiezoStackA() {
+		byte[] retVal = new byte[length];
+		for (int i = 0; i < length; i++)
+			retVal[i] = piezoStackA[i];
+		return retVal;
+	}
+	
+	public byte[] getPiezoStackB() {
+		byte[] retVal = new byte[length];
+		for (int i = 0; i < length; i++)
+			retVal[i] = piezoStackB[i];
+		return retVal;
+	}
+	
+	public byte[] getPiezoStackC() {
+		byte[] retVal = new byte[length];
+		for (int i = 0; i < length; i++)
+			retVal[i] = piezoStackC[i];
+		return retVal;
+	}
+	
 	/* setFrequency
 	 * Author: Will Weaver
 	 * Func:   Sets a new frequency of the waveform
@@ -251,14 +297,18 @@ public class MotionPattern {
 		return amplitude;
 	}
 	
+	public void setRotation(double rotation) {
+		this.rotation.setValue(rotation);
+	}
+	
 	/* setRotation
 	 * Author: Will Weaver
 	 * Func:   Sets a new rotation of the waveform
 	 * Params: amp   : The new rotation in degrees
 	 * Return: [None]
 	 */
-	public void setRotation(double rot) {
-		this.rotation.setValue(rot);
+	public void applyRotation() {
+		
 	}
 	
 	/* getRotation
@@ -271,14 +321,40 @@ public class MotionPattern {
 		return rotation;
 	}
 	
+	public void setDistortion(double distortion) {
+		this.distortion.setValue(distortion);
+	}
+	
 	/* setDistortion
 	 * Author: Will Weaver
-	 * Func:   Sets a new distortion of the waveform
-	 * Params: amp   : The new distortion
+	 * Func:   Modifies the values of the waveform with the distortion index
+	 * Params: [None]
 	 * Return: [None]
 	 */
-	public void setDistortion(double dist) {
-		this.distortion.setValue(dist);
+	public void applyDistortion() {
+		double[] pctA = byteToPctArray(piezoStackA);
+		double[] pctB = byteToPctArray(piezoStackB);
+		double[] pctC = byteToPctArray(piezoStackC);
+		
+		double[] distA = distortArray(pctA, distortion.getValue(), PIEZOSTACKA_Y);
+		double[] distB = distortArray(pctB, distortion.getValue(), PIEZOSTACKB_Y);
+		double[] distC = distortArray(pctC, distortion.getValue(), PIEZOSTACKC_Y);
+		
+		double rescaler = getRescaler(distA, distB, distC);
+		
+		double[] fullA = amplifyArray(distA, rescaler);
+		double[] fullB = amplifyArray(distB, rescaler);
+		double[] fullC = amplifyArray(distC, rescaler);
+		
+		piezoStackA = pctToByteArray(fullA);
+		piezoStackB = pctToByteArray(fullB);
+		piezoStackC = pctToByteArray(fullC);
+		
+		distortion.setValue(0);
+	}
+	
+	public void rejectDistortion() {
+		distortion.setValue(0);
 	}
 	
 	/* getDistortion
@@ -380,34 +456,42 @@ public class MotionPattern {
 		GraphicsContext gc = image.getGraphicsContext2D();	// Enables modification of the image
 
 		gc.setFill(bgColor);
-
+		
+		// Convert bytes to a range of +/-1
+		double[] pctA = byteToPctArray(piezoStackA);
+		double[] pctB = byteToPctArray(piezoStackB);
+		double[] pctC = byteToPctArray(piezoStackC);
+		
+		// Apply distortion to the pattern
+		double[] distA = distortArray(pctA, distortion.getValue(), Math.abs(PIEZOSTACKA_Y));
+		double[] distB = distortArray(pctB, distortion.getValue(), Math.abs(PIEZOSTACKB_Y));
+		double[] distC = distortArray(pctC, distortion.getValue(), Math.abs(PIEZOSTACKC_Y));
+		
+		double rescaler = getRescaler(distA, distB, distC);
+		
+		// Ensure that the full range of value is still being used
+		double[] fullA = amplifyArray(distA, rescaler);
+		double[] fullB = amplifyArray(distB, rescaler);
+		double[] fullC = amplifyArray(distC, rescaler);
+		
+		// Apply amplitude to the pattern
+		double[] ampA = amplifyArray(fullA, amplitude.getValue());
+		double[] ampB = amplifyArray(fullB, amplitude.getValue());
+		double[] ampC = amplifyArray(fullC, amplitude.getValue());
+		
+		// Clip any negative values from the patterns
+		double[] clipA = clipArray(ampA);
+		double[] clipB = clipArray(ampB);
+		double[] clipC = clipArray(ampC);
+		
 		// Convert piezo arrays into point arrays
 		double[] xPoints = new double[length];
 		double[] yPoints = new double[length];
 		for (int i = 0; i < length; i++) {
-			
-			// Convert unsigned bytes into signed ints
-			int aVal = ((int) piezoStackA[i]) & 0xFF;
-			int bVal = ((int) piezoStackB[i]) & 0xFF;
-			int cVal = ((int) piezoStackC[i]) & 0xFF;
-			
-			// Normalize the stack vectors to magnitude range +/-1
-			double aPct = ((double) aVal - 128) / 127;
-			double bPct = ((double) bVal - 128) / 127;
-			double cPct = ((double) cVal - 128) / 127;
-			
-			// Scale values with amplitude
-			aPct *= amplitude.getValue() / 100;
-			bPct *= amplitude.getValue() / 100;
-			cPct *= amplitude.getValue() / 100;
 
 			// Add the vectors to produce cartesian coordinates
-			double x = PIEZOSTACKA_X * aPct + PIEZOSTACKB_X * bPct + PIEZOSTACKC_X * cPct;
-			double y = PIEZOSTACKA_Y * aPct + PIEZOSTACKB_Y * bPct + PIEZOSTACKC_Y * cPct;
-
-			// Normalize the coordinates to magnitude range +/- 1
-			x = x / 2;
-			y = y / 2;
+			double x = PIEZOSTACKA_X * clipA[i] + PIEZOSTACKB_X * clipB[i] + PIEZOSTACKC_X * clipC[i];
+			double y = PIEZOSTACKA_Y * clipA[i] + PIEZOSTACKB_Y * clipB[i] + PIEZOSTACKC_Y * clipC[i];
 
 			// Convert cartesian coordinates to image coordinates
 			xPoints[i] = x * (width / 2) + (width / 2);
@@ -510,6 +594,77 @@ public class MotionPattern {
 		
 		for (int i = 0; i < array.length; i++)
 			newArray[i] = (byte) array[i];
+		
+		return newArray;
+	}
+	
+	private static double[] byteToPctArray(byte[] array) {
+		
+		double[] pct = new double[array.length];
+		for (int i = 0; i < array.length; i++) {
+			int val = ((int) array[i]) & 0xFF;			// Convert unsigned bytes into signed ints
+			pct[i] = ((double) val - 128) / 128;	// Normalize the stack vectors to magnitude range +/-1
+		}
+		
+		return pct;
+	}
+	
+	private static byte[] pctToByteArray(double[] pct) {
+		
+		byte[] array = new byte[pct.length];
+		for (int i = 0; i < array.length; i++) {
+			array[i] = (byte) ((int) (pct[i] * 128 + 128));
+		}
+		
+		return array;
+	}
+	
+	private static double[] distortArray(double[] array, double distortion, double vectorYAdj) {
+		
+		// Calculate distortion scaling
+		double distPct = distortion/100 * Math.abs(vectorYAdj);
+		
+		double[] pct = new double[array.length];
+		double maxPct = 0;
+		for (int i = 0; i < array.length; i++) {
+			pct[i] = array[i] * (1 - distPct);		// Apply distortion scaling to vectors
+			if (Math.abs(pct[i]) > maxPct)	// Determine maximum value
+				maxPct = Math.abs(pct[i]);
+		}
+		
+		return pct;
+	}
+	
+	private static double[] amplifyArray(double[] array, double amplitude) {
+		double[] ampPct = new double[array.length];
+		for (int i = 0; i < array.length; i++)
+			ampPct[i] = array[i] * amplitude / 100;
+		
+		return ampPct;
+	}
+	
+	private static double getRescaler(double[] a, double[] b, double[] c) {
+		double max = 0;
+		for (int i = 0; i < a.length; i++) {
+			if (Math.abs(a[i]) > max)
+				max = Math.abs(a[i]);
+			if (Math.abs(b[i]) > max)
+				max = Math.abs(b[i]);
+			if (Math.abs(c[i]) > max)
+				max = Math.abs(c[i]);
+		}
+				
+		return 100 / max;
+	}
+	
+	private static double[] clipArray(double[] array) {
+		double[] newArray = new double[array.length];
+		for (int i = 0; i < array.length; i++) {
+			if (array[i] > 0)
+				newArray[i] = array[i];
+			else
+				newArray[i] = 0;
+		}
 		
 		return newArray;
 	}

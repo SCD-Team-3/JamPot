@@ -5,15 +5,15 @@ import javafx.scene.control.Slider;
 
 
 public class SelectionSlider extends Slider{
-	private static int value;
-	private static int min;
-	private static int max;
+	private int value;
+	private int min;
+	private int max;
 	
 	public SelectionSlider(int minimum, int maximum, int current)
 	{
-		value = current;
-		min = minimum;
-		max = maximum;
+		this.value = current;
+		this.min = minimum;
+		this.max = maximum;
 		this.setMin(min);
 		this.setMax(max);
 		this.setValue(value);
@@ -29,16 +29,7 @@ public class SelectionSlider extends Slider{
 		this.setLayoutY(200);
 		this.setScaleX(3);
 		this.setScaleY(3);
-		
-		
-		
 	
 		this.getStylesheets().add(getClass().getResource("Slider.css").toExternalForm());
 	}
-	
-	
-
-	
-
-
 }

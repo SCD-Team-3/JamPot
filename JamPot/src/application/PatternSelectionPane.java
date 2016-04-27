@@ -12,8 +12,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
 public class PatternSelectionPane extends Pane {
-	private static final int HORIZONTAL_PATTERNS = 2;
-	private static final int VERTICAL_PATTERNS = 2;
+	private static final int NUM_COLS = 2;
+	private static final int NUM_ROWS = 2;
 	private static final double[] xs = {10, 350};
 	private static final double[] ys = {10, 275};
 	
@@ -55,8 +55,8 @@ public class PatternSelectionPane extends Pane {
 		getChildren().add(back);	
 		
 		//Create and configure slider
-		int pages = -main.getPatterns().size() / (VERTICAL_PATTERNS * HORIZONTAL_PATTERNS);
-		if (main.getPatterns().size() % (VERTICAL_PATTERNS * HORIZONTAL_PATTERNS) > 0)
+		int pages = main.getPatterns().size() / NUM_COLS - 1;
+		if (main.getPatterns().size() % NUM_COLS > 0)
 			pages++;
 		slider = new SelectionSlider(-pages,-1,-1); 
 		slider.valueProperty().addListener(new ChangeListener<Number>() {
@@ -80,14 +80,15 @@ public class PatternSelectionPane extends Pane {
 		getChildren().add(decrement);
 		
 		// Create and configure patterns
-		visiblePatterns = new PatternSelectionGroup[VERTICAL_PATTERNS][HORIZONTAL_PATTERNS];
-		for (int i = 0; i < visiblePatterns.length; i++) {
-			for (int j = 0; j < visiblePatterns[i].length; j++) {
-				int storageIndex = (int) (-slider.getValue()-1) + i * VERTICAL_PATTERNS + j;
-				if (storageIndex < main.getPatterns().size()) {
-					visiblePatterns[i][j] = new PatternSelectionGroup(main.getPatterns().get(storageIndex), xs[i], ys[j], this);
-					getChildren().add(visiblePatterns[i][j]);
-				}
+		visiblePatterns = new PatternSelectionGroup[NUM_ROWS][NUM_COLS];
+		for (int row = 0; row < visiblePatterns.length; row++) {
+			for (int col = 0; col < visiblePatterns[row].length; col++) {
+				int storageIndex = ((int) (-slider.getValue()-1) + row) * NUM_COLS + col;
+				if (storageIndex < main.getPatterns().size())
+					visiblePatterns[row][col] = new PatternSelectionGroup(main.getPatterns().get(storageIndex), xs[col], ys[row], this);
+				else
+					visiblePatterns[row][col] = new PatternSelectionGroup(null, xs[col], ys[row], this);
+				getChildren().add(visiblePatterns[row][col]);
 			}
 		}
 		
@@ -110,12 +111,13 @@ public class PatternSelectionPane extends Pane {
 		
 		int selectedIndex = main.getPatterns().indexOf(selected);
 		int topLeftIndex = main.getPatterns().indexOf(visiblePatterns[0][0].getPattern());
+		int bottomRightIndex = main.getPatterns().indexOf(visiblePatterns[NUM_ROWS-1][NUM_COLS-1].getPattern());
+		if (bottomRightIndex < 0)
+			bottomRightIndex = main.getPatterns().size()-1;
 		
-		if (selectedIndex < 0 || topLeftIndex < 0 || selectedIndex < topLeftIndex)
-			System.out.println("Pattern does not exist");
-		else {
-			greenBorder.setX(xs[(selectedIndex - topLeftIndex) / HORIZONTAL_PATTERNS]);
-			greenBorder.setY(ys[(selectedIndex - topLeftIndex) % HORIZONTAL_PATTERNS]);
+		if (!(selectedIndex < 0 || topLeftIndex < 0 || selectedIndex < topLeftIndex || selectedIndex > bottomRightIndex)) {
+			greenBorder.setX(xs[(selectedIndex - topLeftIndex) % NUM_COLS]);
+			greenBorder.setY(ys[(selectedIndex - topLeftIndex) / NUM_COLS]);
 		
 			getChildren().add(greenBorder);
 		}
@@ -137,11 +139,14 @@ public class PatternSelectionPane extends Pane {
 				slider.setValue(slider.getValue()-1);
 		}
 		
-		for (int i = 0; i < visiblePatterns.length; i++) {
-			for (int j = 0; j < visiblePatterns[i].length; j++) {
-				int storageIndex = (int) slider.getValue() + i * VERTICAL_PATTERNS + j;
-				if (storageIndex < main.getPatterns().size())
-					visiblePatterns[i][j].setPattern(main.getPatterns().get(storageIndex));
+		for (int row = 0; row < visiblePatterns.length; row++) {
+			for (int col = 0; col < visiblePatterns[row].length; col++) {
+				int storageIndex = ((int) (-slider.getValue()-1) + row) * NUM_COLS + col;
+				if (storageIndex < main.getPatterns().size()) {
+					visiblePatterns[row][col].setPattern(main.getPatterns().get(storageIndex));
+				} else {
+					visiblePatterns[row][col].setPattern(null);
+				}
 			}
 		}
 		selectPattern(selectedPattern);
@@ -152,6 +157,12 @@ public class PatternSelectionPane extends Pane {
 		// Remove pattern from storage
 		main.removePattern(selectedPattern);
 		
+		// Update slider
+		int pages = main.getPatterns().size() / NUM_COLS - 1;
+		if (main.getPatterns().size() % NUM_COLS > 0)
+			pages++;
+		slider.setMin(-pages);
+		
 		// Remove patterns from display
 		for (int i = 0; i < visiblePatterns.length; i++)
 			for (int j = 0; j < visiblePatterns[i].length; j++)
@@ -159,14 +170,15 @@ public class PatternSelectionPane extends Pane {
 		getChildren().remove(greenBorder);
 		
 		// Re-add all patterns to display
-		visiblePatterns = new PatternSelectionGroup[VERTICAL_PATTERNS][HORIZONTAL_PATTERNS];
-		for (int i = 0; i < visiblePatterns.length; i++) {
-			for (int j = 0; j < visiblePatterns[i].length; j++) {
-				int storageIndex = (int) (-slider.getValue()-1) + i * VERTICAL_PATTERNS + j;
-				if (storageIndex < main.getPatterns().size()) {
-					visiblePatterns[i][j] = new PatternSelectionGroup(main.getPatterns().get(storageIndex), xs[i], ys[j], this);
-					getChildren().add(visiblePatterns[i][j]);
-				}
+		visiblePatterns = new PatternSelectionGroup[NUM_ROWS][NUM_COLS];
+		for (int row = 0; row < visiblePatterns.length; row++) {
+			for (int col = 0; col < visiblePatterns[row].length; col++) {
+				int storageIndex = ((int) (-slider.getValue()-1) + row) * NUM_COLS + col;
+				if (storageIndex < main.getPatterns().size())
+					visiblePatterns[row][col] = new PatternSelectionGroup(main.getPatterns().get(storageIndex), xs[col], ys[row], this);
+				else
+					visiblePatterns[row][col] = new PatternSelectionGroup(null, xs[col], ys[row], this);
+				getChildren().add(visiblePatterns[row][col]);
 			}
 		}
 	}

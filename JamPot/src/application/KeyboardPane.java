@@ -31,7 +31,7 @@ public class KeyboardPane extends Pane {
 	// Non-visible properties
 	private JamPot main;
 	private MotionPattern pattern;
-	private String patternName;
+	private String patternName = "";
 	private KeyButton[] keyButtons;
 	
 	// On-Screen Elements
@@ -83,7 +83,7 @@ public class KeyboardPane extends Pane {
 	public void acceptKeyboard()
 	{
 		pattern.setName(patternName);
-		main.getPatterns().add(pattern);
+		main.addPattern(pattern);
 		
 		main.goToHomePane(pattern);
 	}

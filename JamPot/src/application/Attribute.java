@@ -17,11 +17,14 @@
 
 package application;
 
-public class Attribute {
+import java.io.Serializable;
+
+public class Attribute implements Serializable {
+	private static final long serialVersionUID = 7665084137230844408L;
 	private String name;
 	private double value;
 	private String unit;
-	private QuickAccessGroup displayer;
+	transient private QuickAccessGroup displayer;
 	private MotionPattern pattern;
 	private double min;
 	private double max;

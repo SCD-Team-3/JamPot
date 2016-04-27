@@ -1,0 +1,578 @@
+/* MotionPattern.java
+ *
+ * AUTHOR
+ * Will Weaver
+ * Computer Engineering Major
+ * Mechanical Engineering Senior Capstone Design Team 3
+ * Michigan Technological University
+ *
+ * SPONSOR
+ * Mitch Baldwin
+ * Stryker Instruments
+ *
+ * DESCRIPTION
+ * Represents and manipulates motion patterns which can be modified by the JamPot GUI
+ * and sent to the JamJel device.
+ */
+
+package application;
+
+import java.lang.IllegalArgumentException;
+import javafx.scene.canvas.*;
+import javafx.scene.paint.Color;
+
+public class MotionPattern {
+	
+	private static final byte[] SINEWAVE = shortToByteArray(new short[] {
+			0x80,0x83,0x86,0x89,0x8c,0x8f,0x92,0x95,0x98,0x9c,0x9f,0xa2,0xa5,0xa8,0xab,0xae,
+			0xb0,0xb3,0xb6,0xb9,0xbc,0xbf,0xc1,0xc4,0xc7,0xc9,0xcc,0xce,0xd1,0xd3,0xd5,0xd8,
+			0xda,0xdc,0xde,0xe0,0xe2,0xe4,0xe6,0xe8,0xea,0xec,0xed,0xef,0xf0,0xf2,0xf3,0xf5,
+			0xf6,0xf7,0xf8,0xf9,0xfa,0xfb,0xfc,0xfc,0xfd,0xfe,0xfe,0xff,0xff,0xff,0xff,0xff,
+			0xff,0xff,0xff,0xff,0xff,0xff,0xfe,0xfe,0xfd,0xfc,0xfc,0xfb,0xfa,0xf9,0xf8,0xf7,
+			0xf6,0xf5,0xf3,0xf2,0xf0,0xef,0xed,0xec,0xea,0xe8,0xe6,0xe4,0xe2,0xe0,0xde,0xdc,
+			0xda,0xd8,0xd5,0xd3,0xd1,0xce,0xcc,0xc9,0xc7,0xc4,0xc1,0xbf,0xbc,0xb9,0xb6,0xb3,
+			0xb0,0xae,0xab,0xa8,0xa5,0xa2,0x9f,0x9c,0x98,0x95,0x92,0x8f,0x8c,0x89,0x86,0x83,
+			0x80,0x7c,0x79,0x76,0x73,0x70,0x6d,0x6a,0x67,0x63,0x60,0x5d,0x5a,0x57,0x54,0x51,
+			0x4f,0x4c,0x49,0x46,0x43,0x40,0x3e,0x3b,0x38,0x36,0x33,0x31,0x2e,0x2c,0x2a,0x27,
+			0x25,0x23,0x21,0x1f,0x1d,0x1b,0x19,0x17,0x15,0x13,0x12,0x10,0x0f,0x0d,0x0c,0x0a,
+			0x09,0x08,0x07,0x06,0x05,0x04,0x03,0x03,0x02,0x01,0x01,0x00,0x00,0x00,0x00,0x00,
+			0x00,0x00,0x00,0x00,0x00,0x00,0x01,0x01,0x02,0x03,0x03,0x04,0x05,0x06,0x07,0x08,
+			0x09,0x0a,0x0c,0x0d,0x0f,0x10,0x12,0x13,0x15,0x17,0x19,0x1b,0x1d,0x1f,0x21,0x23,
+			0x25,0x27,0x2a,0x2c,0x2e,0x31,0x33,0x36,0x38,0x3b,0x3e,0x40,0x43,0x46,0x49,0x4c,
+			0x4f,0x51,0x54,0x57,0x5a,0x5d,0x60,0x63,0x67,0x6a,0x6d,0x70,0x73,0x76,0x79,0x7c});
+	
+	// A(t) = sin(t)
+	// B(t) = 0.5sin(t-180)
+	// C(t) = 0.5sin(t-180)
+	public static final MotionPattern LINE_A = new MotionPattern("Line A",
+																 scaleArray(getSineWaveShifted(0), 1),
+																 scaleArray(getSineWaveShifted(180), 0.5), 
+																 scaleArray(getSineWaveShifted(180), 0.5),
+																 (short) 100, (short) 100);
+	
+	// A(t) = 0.5sin(t-180)
+	// B(t) = sin(t)
+	// C(t) = 0.5sin(t-180)
+	public static final MotionPattern LINE_B = new MotionPattern("Line B",
+			 													 scaleArray(getSineWaveShifted(180), 0.5),
+																 scaleArray(getSineWaveShifted(0), 1),
+																 scaleArray(getSineWaveShifted(180), 0.5),
+																 (short) 100, (short) 100);
+
+	// A(t) = 0.5sin(t-180)
+	// B(t) = 0.5sin(t-180)
+	// C(t) = sin(t)
+	public static final MotionPattern LINE_C = new MotionPattern("Line C",
+			 													 scaleArray(getSineWaveShifted(180), 0.5),
+																 scaleArray(getSineWaveShifted(180), 0.5),
+																 scaleArray(getSineWaveShifted(0), 1),
+																 (short) 100, (short) 100);
+	
+	// A(t) = sin(t)
+	// B(t) = sin(t+120)
+	// C(t) = sin(t+240)
+	public static final MotionPattern CIRCLE = new MotionPattern("Circle",
+			 													 scaleArray(getSineWaveShifted(0), 1),
+																 scaleArray(getSineWaveShifted(120), 1),
+																 scaleArray(getSineWaveShifted(240), 1),
+																 (short) 100, (short) 100);
+
+	private static final int TYPE_LEN = 1;
+	private static final int SIZE_LEN = 2;
+	private static final int DEL_LEN = 1;
+	private static final int SHORT_LEN = 1;
+	private static final byte MSG_TYPE = 1;
+	private static final byte FREQ_TYPE = 2;
+	private static final byte AMP_TYPE = 3;
+	private static final byte DEL = (byte) 0xAA;
+	private static final double PIEZOSTACKA_X = 1;
+	private static final double PIEZOSTACKA_Y = 0;
+	private static final double PIEZOSTACKB_X = -0.5;
+	private static final double PIEZOSTACKB_Y = 0.86602540378;
+	private static final double PIEZOSTACKC_X = -0.5;
+	private static final double PIEZOSTACKC_Y = -0.86602540378;
+	private String name;
+	private short length = 0;
+	private byte[] piezoStackA = null;
+	private byte[] piezoStackB = null;
+	private byte[] piezoStackC = null;
+	private Attribute frequency = new Attribute(this, "Frequency", "Hz", 100, 0, 999);
+	private Attribute amplitude = new Attribute(this, "Amplitude", "%", 100, 0, 100);
+	private Attribute rotation = new Attribute(this, "Rotation", "\u00b0", 0, 0, 360);
+	private Attribute distortion = new Attribute(this, "Distortion", "%", 0, 0, 100);
+	private MotionPatternDisplayer displayer;
+	
+	/* MotionPattern
+	 * Author: Will Weaver
+	 * Func:   A zero-argument constructor for a new MotionPattern
+	 * Params: [None]
+	 * Return: [None]
+	 */
+	public MotionPattern(String name) {
+		this.name = name;
+	}
+	
+	/* MotionPattern
+	 * Author: Will Weaver
+	 * Func:   Constructs a new MotionPattern with all properties provided
+	 * Params: arrayA   : Bytes to be output to piezoelectric stack A
+	 *         arrayB   : Bytes to be output to piezoelectric stack B
+	 *         arrayC   : Bytes to be output to piezoelectric stack C
+	 *         freq     : Frequency of the entire waveform
+	 *         amp      : Amplitude of the waveform
+	 * Return: [None]
+	 */
+	public MotionPattern(String name, byte[] arrayA, byte[] arrayB, byte[] arrayC, short freq, double amp) {
+		if (arrayA.length != arrayB.length || arrayA.length != arrayC.length)
+			throw new IllegalArgumentException("Mismatching array lengths");
+		
+		if (amp > 100 || amp < 0)
+			throw new IllegalArgumentException("Invalid amplitude");
+		
+		this.name = name;
+		this.piezoStackA = arrayA;
+		this.piezoStackB = arrayB;
+		this.piezoStackC = arrayC;
+		this.frequency.setValue(freq);
+		this.amplitude.setValue(amp);
+		this.length = (short) arrayA.length;
+	}
+	
+	public String getName() {
+		return name;
+	}
+	
+	public void setName(String name) {
+		this.name = name;
+	}
+	
+	public void setDisplayer(MotionPatternDisplayer newDisplayer) {
+		displayer = newDisplayer;
+	}
+	
+	/* setLength
+	 * Author: Will Weaver
+	 * Func:   Sets a new length of the waveform and allocates new arrays
+	 * Params: length   : The new length
+	 * Return: [None]
+	 */
+	public void setLength(short length) {
+		this.length = length;
+		piezoStackA = new byte[length];
+		piezoStackB = new byte[length];
+		piezoStackC = new byte[length];
+	}
+	
+	/* setPiezoStackA
+	 * Author: Will Weaver
+	 * Func:   Copies new values into the waveform for piezoelectric stack A.
+	 *         If the length is different than any previously set length,
+	 *         setLength must be called prior to this function.
+	 * Params: length   : The new length
+	 * Return: [None]
+	 */
+	public void setPiezoStackA(byte[] array) {
+		if (array.length != length)
+			throw new IllegalArgumentException("Array length does not match set length");
+
+		for (int i = 0; i < length; i++)
+			piezoStackA[i] = array[i];
+	}
+	
+	/* setPiezoStackB
+	 * Author: Will Weaver
+	 * Func:   Copies new values into the waveform for piezoelectric stack B.
+	 *         If the length is different than any previously set length,
+	 *         setLength must be called prior to this function.
+	 * Params: length   : The new length
+	 * Return: [None]
+	 */
+	public void setPiezoStackB(byte[] array) {
+		if (array.length != length)
+			throw new IllegalArgumentException("Array length does not match set length");
+
+		for (int i = 0; i < length; i++)
+			piezoStackB[i] = array[i];
+	}
+	
+	/* setPiezoStackC
+	 * Author: Will Weaver
+	 * Func:   Copies new values into the waveform for piezoelectric stack C.
+	 *         If the length is different than any previously set length,
+	 *         setLength must be called prior to this function.
+	 * Params: length   : The new length
+	 * Return: [None]
+	 */
+	public void setPiezoStackC(byte[] array) {
+		if (array.length != length)
+			throw new IllegalArgumentException("Array length does not match set length");
+
+		for (int i = 0; i < length; i++)
+			piezoStackC[i] = array[i];
+	}
+	
+	/* setFrequency
+	 * Author: Will Weaver
+	 * Func:   Sets a new frequency of the waveform
+	 * Params: freq   : The new frequency
+	 * Return: [None]
+	 */
+	public void setFrequency(int freq) {
+		this.frequency.setValue(freq);
+	}
+	
+	/* getFrequency
+	 * Author: Will Weaver
+	 * Func:   Gets the current frequency of the waveform
+	 * Params: [None]
+	 * Return: The current frequency of the waveform
+	 */
+	public Attribute getFrequency() {
+		return this.frequency;
+	}
+	
+	/* setAmplitude
+	 * Author: Will Weaver
+	 * Func:   Sets a new amplitude of the waveform
+	 * Params: amp   : The new amplitude
+	 * Return: [None]
+	 */
+	public void setAmplitude(double amp) {
+		this.amplitude.setValue(amp);
+	}
+	
+	/* getAmplitude
+	 * Author: Will Weaver
+	 * Func:   Gets the current amplitude of the waveform as a fraction of max
+	 * Params: [None]
+	 * Return: The current amplitude of the waveform
+	 */
+	public Attribute getAmplitude() {
+		return amplitude;
+	}
+	
+	/* setRotation
+	 * Author: Will Weaver
+	 * Func:   Sets a new rotation of the waveform
+	 * Params: amp   : The new rotation in degrees
+	 * Return: [None]
+	 */
+	public void rotate(double rot) {
+		this.rotation.setValue(rot);
+	}
+	
+	/* getRotation
+	 * Author: Will Weaver
+	 * Func:   Gets the current rotation of the waveform in degrees
+	 * Params: [None]
+	 * Return: The current rotation of the waveform
+	 */
+	public Attribute getRotation() {
+		return rotation;
+	}
+	
+	/* setDistortion
+	 * Author: Will Weaver
+	 * Func:   Modifies the values of the waveform with the distortion index
+	 * Params: [None]
+	 * Return: [None]
+	 */
+	public void applyDistortion() {
+		double[] pctA = byteToPctArray(piezoStackA);
+		double[] pctB = byteToPctArray(piezoStackB);
+		double[] pctC = byteToPctArray(piezoStackC);
+		
+		double[] distA = distortArray(pctA, distortion.getValue(), PIEZOSTACKA_Y);
+		double[] distB = distortArray(pctB, distortion.getValue(), PIEZOSTACKB_Y);
+		double[] distC = distortArray(pctC, distortion.getValue(), PIEZOSTACKC_Y);
+		
+		piezoStackA = pctToByteArray(distA);
+		piezoStackB = pctToByteArray(distB);
+		piezoStackC = pctToByteArray(distC);
+		
+		distortion.setValue(0);
+	}
+	
+	public void rejectDistortion() {
+		distortion.setValue(0);
+	}
+	
+	/* getDistortion
+	 * Author: Will Weaver
+	 * Func:   Gets the current distortion of the waveform
+	 * Params: [None]
+	 * Return: The current distortion of the waveform
+	 */
+	public Attribute getDistortion() {
+		return distortion;
+	}
+	
+	/* getAmplitudeMessage
+	 * Author: Will Weaver
+	 * Func:   Generates the byte-level message to be sent to the JamJel device
+	 *         to change the amplitude of the waveform
+	 * Params: [None]
+	 * Return: The JamJel-ready command to change the amplitude
+	 */
+	public byte[] getAmplitudeMessage() {
+		byte[] msg = new byte[TYPE_LEN + SHORT_LEN];
+		int msgIndex = 0;
+		
+		msg[msgIndex++] = AMP_TYPE;
+		for (byte b : bytize((short) (amplitude.getValue()*65535), SHORT_LEN))
+			msg[msgIndex++] = b;
+		
+		return msg;
+	}
+	
+	/* getFrequencyMessage
+	 * Author: Will Weaver
+	 * Func:   Generates the byte-level message to be sent to the JamJel device
+	 *         to change the frequency of the waveform
+	 * Params: [None]
+	 * Return: The JamJel-ready command to change the frequency
+	 */
+	public byte[] getFrequencyMessage() {
+		byte[] msg = new byte[TYPE_LEN + SHORT_LEN];
+		int msgIndex = 0;
+		
+		msg[msgIndex++] = FREQ_TYPE;
+		for (byte b : bytize((short) frequency.getValue(), SHORT_LEN))
+			msg[msgIndex++] = b;
+		
+		return msg;
+	}
+	
+	/* getPatternMessage
+	 * Author: Will Weaver
+	 * Func:   Generates the byte-level message to be sent to the JamJel device
+	 *         to change the overall motion pattern
+	 * Params: [None]
+	 * Return: The JamJel-ready command to change the pattern
+	 */
+	public byte[] getPatternMessage() {
+		byte[] msg = new byte[TYPE_LEN + SIZE_LEN +
+		                      length + DEL_LEN +
+		                      length + DEL_LEN +
+		                      length + DEL_LEN];
+		int msgIndex = 0;
+		
+		// Message header
+		msg[msgIndex++] = MSG_TYPE;
+		for (byte b : bytize(length, SIZE_LEN))
+			msg[msgIndex++] = b;
+		
+		// Piezostack A
+		for (byte b : piezoStackA)
+			msg[msgIndex++] = b;
+		msg[msgIndex++] = DEL;
+		
+		// Piezostack B
+		for (byte b : piezoStackB)
+			msg[msgIndex++] = b;
+		msg[msgIndex++] = DEL;
+		
+		// Piezostack C
+		for (byte b : piezoStackC)
+			msg[msgIndex++] = b;
+		msg[msgIndex++] = DEL;
+		
+		return msg;
+	}
+
+	/* getImage
+	 * Author: Will Weaver
+	 * Func:   Generates an image of the line traced by the cutting tip in the
+	 *         current motion pattern
+	 * Params: width     : The width of the image
+	 *         height    : The height of the image
+	 *         bgColor   : The color of the image background
+	 *         lineColor : The color of the trace line
+	 *         lineWidth : The width (in pixels) of the trace line
+	 * Return: The image of the motion pattern as a Canvas
+	 */
+	public Canvas getImage(int width, int height, Color bgColor, Color lineColor, int lineWidth) {
+		Canvas image = new Canvas(width, height);			// Create the image to draw on
+		GraphicsContext gc = image.getGraphicsContext2D();	// Enables modification of the image
+
+		gc.setFill(bgColor);
+		
+		double[] pctA = byteToPctArray(piezoStackA);
+		double[] pctB = byteToPctArray(piezoStackB);
+		double[] pctC = byteToPctArray(piezoStackC);
+		
+		double[] distA = distortArray(pctA, distortion.getValue(), PIEZOSTACKA_Y);
+		double[] distB = distortArray(pctB, distortion.getValue(), PIEZOSTACKB_Y);
+		double[] distC = distortArray(pctC, distortion.getValue(), PIEZOSTACKC_Y);
+		
+		double[] ampA = amplifyArray(distA, amplitude.getValue());
+		double[] ampB = amplifyArray(distB, amplitude.getValue());
+		double[] ampC = amplifyArray(distC, amplitude.getValue());
+		
+		// Convert piezo arrays into point arrays
+		double[] xPoints = new double[length];
+		double[] yPoints = new double[length];
+		for (int i = 0; i < length; i++) {
+
+			// Add the vectors to produce cartesian coordinates
+			double x = PIEZOSTACKA_X * ampA[i] + PIEZOSTACKB_X * ampB[i] + PIEZOSTACKC_X * ampC[i];
+			double y = PIEZOSTACKA_Y * ampA[i] + PIEZOSTACKB_Y * ampB[i] + PIEZOSTACKC_Y * ampC[i];
+
+			// Normalize the coordinates to magnitude range +/- 1
+			x = x / 2;
+			y = y / 2;
+
+			// Convert cartesian coordinates to image coordinates
+			xPoints[i] = x * (width / 2) + (width / 2);
+			yPoints[i] = y * (height / 2) + (height / 2);
+		}
+
+		// Draw polygon approximation of motion pattern
+		gc.setStroke(lineColor);
+		gc.setLineWidth(lineWidth);
+		gc.strokePolygon(xPoints, yPoints, length);
+
+		return image;
+	}
+	
+	/* update
+	 * Author: Will Weaver
+	 * Func:   Forces the current displayer to update its representation
+	 * Params: [None]
+	 * Return: [None]
+	 */
+	public void update() {
+		displayer.update(this);
+	}
+	
+	/* extractByte
+	 * Author: Will Weaver
+	 * Func:   Returns the byte at the specified byte index in a larger variable
+	 * Params: value : The variable from which a byte should be extracted
+	 *         index : The byte index to extract
+	 * Return: The byte extracted from the variable
+	 */
+	private static byte extractByte(int value, int index) {
+		int bitShift = index * 8;
+		int mask = ((1 << 8) - 1) << bitShift;
+		return (byte) ((mask | value) >> bitShift);
+	}
+	
+	/* bytize
+	 * Author: Will Weaver
+	 * Func:   Converts a larger variable into an array of bytes
+	 * Params: value : The variable to be converted to bytes
+	 *         size  : The number of bytes in the variable
+	 * Return: The array of bytes representing the variable
+	 */
+	private static byte[] bytize(int value, int size) {
+		byte[] bytes = new byte[size];
+		for (int i = 0; i < size; i++)
+			bytes[0] = extractByte(value, i);
+		return bytes;
+	}
+	
+	/* getSineWaveShifted
+	 * Author: Will Weaver
+	 * Func:   Generates a pure phase shifted sine wave
+	 * Params: degreeShift : The desired phase shift in degrees
+	 * Return: An approximated phase-shift pure sine wave
+	 */
+	private static byte[] getSineWaveShifted(double degreeShift) {
+		byte[] newWave = new byte[SINEWAVE.length];
+
+		// Normalizes the phase shift to a positive number less than the whole
+		// Converts the phase shift from degrees to an array index
+		short indexShift = (short) (((degreeShift % 360.0) / 360.0) * SINEWAVE.length);
+
+		// Fills in the first n values in the new wave with the last n values of
+		// the reference wave, where n = indexShift.
+		for (short i = 0; i < indexShift; i++)
+			newWave[i] = SINEWAVE[SINEWAVE.length - indexShift + i];
+
+		// Fills in the last m values in the new wave with the first m values of
+		// the reference wave, where m = SINEWAVE_LENGTH - indexShift
+		for (short i = indexShift; i < SINEWAVE.length; i++)
+			newWave[i] = SINEWAVE[i - indexShift];
+
+		return newWave;
+	}
+	
+	/* scaleArray
+	 * Author: Will Weaver
+	 * Func:   Scales a given byte array around a center point of 128 in place
+	 * Params: array  : The array to be scaled
+	 *         factor : The factor by which the array should be multiplied
+	 * Return: The scaled array
+	 */
+	private static byte[] scaleArray(byte[] array, double factor) {
+		for (int i = 0; i < array.length; i++)
+			array[i] = (byte) (((((double) array[i]) - 128) * factor) + 128);
+
+		return array;
+	}
+	
+	/* intToByteArray
+	 * Author: Will Weaver
+	 * Func:   Allows for byte literals to be used by casting ints to bytes
+	 * Params: array  : The int array to be cast
+	 * Return: The byte array
+	 */
+	private static byte[] shortToByteArray(short[] array) {
+		byte[] newArray = new byte[array.length];
+		
+		for (int i = 0; i < array.length; i++)
+			newArray[i] = (byte) array[i];
+		
+		return newArray;
+	}
+	
+	private static double[] byteToPctArray(byte[] array) {
+		
+		double[] pct = new double[array.length];
+		for (int i = 0; i < array.length; i++) {
+			int val = ((int) array[i]) & 0xFF;			// Convert unsigned bytes into signed ints
+			pct[i] = ((double) val - 128) / 127;	// Normalize the stack vectors to magnitude range +/-1
+		}
+		
+		return pct;
+	}
+	
+	private static byte[] pctToByteArray(double[] pct) {
+		
+		byte[] array = new byte[pct.length];
+		for (int i = 0; i < array.length; i++) {
+			array[i] = (byte) ((int) (pct[i] * 127 + 128));
+			System.out.println(array[i]);
+		}
+		
+		return array;
+	}
+	
+	private static double[] distortArray(double[] array, double distortion, double vectorYAdj) {
+		
+		// Calculate distortion scaling
+		double distPct = distortion/100 * Math.abs(vectorYAdj);
+		
+		double[] pct = new double[array.length];
+		double maxPct = 0;
+		for (int i = 0; i < 100; i++) {
+			pct[i] = array[i] * (1 - distPct);		// Apply distortion scaling to vectors
+			if (Math.abs(pct[i]) > maxPct)	// Determine maximum value
+				maxPct = Math.abs(pct[i]);
+		}
+		
+		for (int i = 0; i < 100; i++)
+			pct[i] /= maxPct;	// Scale values so max is 1
+		
+		return pct;
+	}
+	
+	private static double[] amplifyArray(double[] array, double amplification) {
+		double[] ampPct = new double[array.length];
+		for (int i = 0; i < 100; i++)
+			ampPct[i] = array[i] * amplification / 100;
+		
+		return ampPct;
+	}
+}

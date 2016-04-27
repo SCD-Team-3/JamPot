@@ -1,0 +1,9 @@
+package application;
+
+public class FileStorage {
+
+	public FileStorage() {
+		// TODO Auto-generated constructor stub
+	}
+
+}

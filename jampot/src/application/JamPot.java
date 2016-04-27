@@ -17,6 +17,12 @@
 
 package application;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 
 import javafx.application.Application;
@@ -26,7 +32,8 @@ import javafx.stage.Stage;
 public class JamPot extends Application {
 
 	private Stage theStage;
-	private ArrayList<MotionPattern> patterns;
+	private File storageFile;
+	private FileStorage storage;
 	
 	public static void main(String[] args) {
 		launch(args);
@@ -34,31 +41,47 @@ public class JamPot extends Application {
 
 	public void start(Stage primaryStage) throws Exception {
 		
-		// TODO Read patterns from file into arraylist
-		patterns = new ArrayList<MotionPattern>();
-		patterns.add(MotionPattern.CIRCLE);
-		patterns.add(MotionPattern.LINE_A);
-		patterns.add(MotionPattern.LINE_B);
-		patterns.add(MotionPattern.LINE_C);
+		storageFile = new File("patterns.jpt");
+		FileInputStream fin = new FileInputStream("patterns.jpt");
+		ObjectInputStream ois = new ObjectInputStream(fin);
+		storage = (FileStorage) ois.readObject();
+		ois.close();
 		
 		theStage = primaryStage; 
 		
-		goToHomePane(patterns.get(0));
+		goToHomePane(storage.data.get(0));
 		primaryStage.setTitle("JamPot");
 		primaryStage.show();
 
 	}
 	
+	public void save() {
+		try {
+			FileOutputStream fout = new FileOutputStream(storageFile, false);
+			FileChannel outChan = fout.getChannel();
+			outChan.truncate(0);
+			ObjectOutputStream oos = new ObjectOutputStream(fout);
+			oos.writeObject(storage);
+			oos.flush();
+			oos.close();
+			fout.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public ArrayList<MotionPattern> getPatterns() {
-		return patterns;
+		return storage.data;
 	}
 
 	public void addPattern(MotionPattern pattern) {
-		patterns.add(pattern);
+		storage.data.add(pattern);
+		save();
 	}
 	
 	public void removePattern(MotionPattern pattern) {
-		patterns.remove(pattern);
+		storage.data.remove(pattern);
+		save();
 	}
 	
 	public void goToHomePane(MotionPattern curPattern) {

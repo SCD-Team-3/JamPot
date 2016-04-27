@@ -38,10 +38,11 @@
 	<section name="FatJarPackageWizard">
 		<item value="C:\Users\will__000\Google Drive\Documents\MEEM4911\JamPot" key="FatJarPackageWizardPage.ANTSCRIPT_LOCATION"/>
 		<item value="JamPot - JamPot" key="FatJarPackageWizardPage.LAUNCH_CONFIGURATION_SELECTION_NAME"/>
-		<item value="C:\Users\will__000\Google Drive\Documents\MEEM4911\JamPot\demo_041816.jar" key="FatJarPackageWizardPage.DESTINATION_PATH_SELECTION"/>
+		<item value="C:\Users\will__000\Google Drive\Documents\MEEM4911\JamPot\demo_042616.jar" key="FatJarPackageWizardPage.DESTINATION_PATH_SELECTION"/>
 		<item value="false" key="FatJarPackageWizardPage.ANTSCRIPT_SAVE"/>
 		<item value="1" key="FatJarPackageWizardPage.LIBRARY_HANDLING"/>
 		<list key="FatJarPackageWizardPage.DESTINATION_NAMES_ID">
+			<item value="C:\Users\will__000\Google Drive\Documents\MEEM4911\JamPot\demo_042616.jar"/>
 			<item value="C:\Users\will__000\Google Drive\Documents\MEEM4911\JamPot\demo_041816.jar"/>
 			<item value="M:\mesd_team3\GUI\demo_040716.jar"/>
 		</list>
